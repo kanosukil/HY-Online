@@ -2,7 +2,8 @@ CREATE TABLE IF NOT EXISTS `User`
 (
     `id`            int PRIMARY KEY,
     `username`      varchar(20),
-    `password_hash` varchar(20)
+    `password_hash` varchar(20),
+    `head_portrait` varchar(100)
 );
 
 CREATE TABLE IF NOT EXISTS `Goods`
@@ -110,3 +111,34 @@ ALTER TABLE `User_Role`
 
 ALTER TABLE `User_Role`
     ADD FOREIGN KEY (`role_key`) REFERENCES `Role` (`id`);
+
+
+CREATE TABLE IF NOT EXISTS `Cart`
+(
+    `id`          int,
+    `total_price` double
+);
+
+CREATE TABLE IF NOT EXISTS `User_Cart`
+(
+    `user_key` int,
+    `cart_key` int
+);
+
+ALTER TABLE `User_Cart`
+    ADD FOREIGN KEY (`user_key`) REFERENCES `User` (`id`);
+
+ALTER TABLE `User_Cart`
+    ADD FOREIGN KEY (`cart_key`) REFERENCES `Cart` (`id`);
+
+CREATE TABLE IF NOT EXISTS `Goods_Cart`
+(
+    `goods_key` int,
+    `cart_key`  int
+);
+
+ALTER TABLE `Goods_Cart`
+    ADD FOREIGN KEY (`goods_key`) REFERENCES `Goods` (`id`);
+
+ALTER TABLE `Goods_Cart`
+    ADD FOREIGN KEY (`cart_key`) REFERENCES `Cart` (`id`);
