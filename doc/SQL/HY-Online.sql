@@ -1,6 +1,6 @@
 CREATE TABLE IF NOT EXISTS `User`
 (
-    `id`            int PRIMARY KEY,
+    `id`            int PRIMARY KEY UNIQUE,
     `username`      varchar(20),
     `password_hash` varchar(20),
     `head_portrait` varchar(100)
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS `User`
 
 CREATE TABLE IF NOT EXISTS `Goods`
 (
-    `id`          int PRIMARY KEY,
+    `id`          int PRIMARY KEY UNIQUE,
     `name`        varchar(40),
     `img`         varchar(100),
     `price`       double,
@@ -17,26 +17,26 @@ CREATE TABLE IF NOT EXISTS `Goods`
 
 CREATE TABLE IF NOT EXISTS `Store`
 (
-    `id`   int PRIMARY KEY,
+    `id`   int PRIMARY KEY UNIQUE,
     `name` varchar(40)
 );
 
 CREATE TABLE IF NOT EXISTS `Comment`
 (
-    `id`      int PRIMARY KEY,
+    `id`      int PRIMARY KEY UNIQUE,
     `content` varchar(500)
 );
 
 CREATE TABLE IF NOT EXISTS `Order`
 (
-    `id`      int PRIMARY KEY,
+    `id`      int PRIMARY KEY UNIQUE,
     `number`  int,
     `address` varchar(100)
 );
 
 CREATE TABLE IF NOT EXISTS `Role`
 (
-    `id`   int PRIMARY KEY,
+    `id`   int PRIMARY KEY UNIQUE,
     `rank` varchar(10)
 );
 
@@ -115,7 +115,7 @@ ALTER TABLE `User_Role`
 
 CREATE TABLE IF NOT EXISTS `Cart`
 (
-    `id`          int PRIMARY KEY,
+    `id`          int PRIMARY KEY UNIQUE,
     `total_price` double
 );
 
