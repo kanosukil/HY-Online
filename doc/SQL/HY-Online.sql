@@ -41,72 +41,72 @@ CREATE TABLE IF NOT EXISTS `Role`
 
 CREATE TABLE IF NOT EXISTS `User_Store`
 (
-    `masterkey` int,
-    `storekey`  int
+    `master_key` int,
+    `store_key`  int
 );
 
 CREATE TABLE IF NOT EXISTS `User_Order`
 (
-    `customerkey` int,
-    `orderkey`    int
+    `customer_key` int,
+    `order_key`    int
 );
 
 CREATE TABLE IF NOT EXISTS `Store_Order`
 (
-    `storekey` int,
-    `orderkey` int
+    `store_key` int,
+    `order_key` int
 );
 
 CREATE TABLE IF NOT EXISTS `Store_Goods`
 (
-    `storekey` int,
-    `goodskey` int
+    `store_key` int,
+    `goods_key` int
 );
 
 CREATE TABLE IF NOT EXISTS `User_Comment`
 (
-    `userkey`    int,
-    `commentkey` int
+    `user_key`    int,
+    `comment_key` int
 );
 
 CREATE TABLE IF NOT EXISTS `User_Role`
 (
-    `userkey` int,
-    `rolekey` int
+    `user_key` int,
+    `role_key` int
 );
 
 ALTER TABLE `User_Store`
-    ADD FOREIGN KEY (`masterkey`) REFERENCES `User` (`id`);
+    ADD FOREIGN KEY (`master_key`) REFERENCES `User` (`id`);
 
 ALTER TABLE `User_Store`
-    ADD FOREIGN KEY (`storekey`) REFERENCES `Store` (`id`);
+    ADD FOREIGN KEY (`store_key`) REFERENCES `Store` (`id`);
 
 ALTER TABLE `User_Order`
-    ADD FOREIGN KEY (`customerkey`) REFERENCES `User` (`id`);
+    ADD FOREIGN KEY (`customer_key`) REFERENCES `User` (`id`);
 
 ALTER TABLE `User_Order`
-    ADD FOREIGN KEY (`orderkey`) REFERENCES `Order` (`id`);
+    ADD FOREIGN KEY (`order_key`) REFERENCES `Order` (`id`);
 
 ALTER TABLE `Store_Order`
-    ADD FOREIGN KEY (`storekey`) REFERENCES `Store` (`id`);
+    ADD FOREIGN KEY (`store_key`) REFERENCES `Store` (`id`);
 
 ALTER TABLE `Store_Order`
-    ADD FOREIGN KEY (`orderkey`) REFERENCES `Order` (`id`);
+    ADD FOREIGN KEY (`order_key`) REFERENCES `Order` (`id`);
 
 ALTER TABLE `Store_Goods`
-    ADD FOREIGN KEY (`storekey`) REFERENCES `Store` (`id`);
+    ADD FOREIGN KEY (`store_key`) REFERENCES `Store` (`id`);
 
 ALTER TABLE `Store_Goods`
-    ADD FOREIGN KEY (`goodskey`) REFERENCES `Goods` (`id`);
+    ADD FOREIGN KEY (`goods_key`) REFERENCES `Goods` (`id`);
 
 ALTER TABLE `User_Comment`
-    ADD FOREIGN KEY (`userkey`) REFERENCES `User` (`id`);
+    ADD FOREIGN KEY (`user_key`) REFERENCES `User` (`id`);
 
 ALTER TABLE `User_Comment`
-    ADD FOREIGN KEY (`commentkey`) REFERENCES `Comment` (`id`);
+    ADD FOREIGN KEY (`comment_key`) REFERENCES `Comment` (`id`);
 
 ALTER TABLE `User_Role`
-    ADD FOREIGN KEY (`userkey`) REFERENCES `User` (`id`);
+    ADD FOREIGN KEY (`user_key`) REFERENCES `User` (`id`);
 
 ALTER TABLE `User_Role`
-    ADD FOREIGN KEY (`rolekey`) REFERENCES `Role` (`id`);
+    ADD FOREIGN KEY (`role_key`) REFERENCES `Role` (`id`);
