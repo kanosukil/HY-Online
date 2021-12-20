@@ -115,7 +115,7 @@ ALTER TABLE `User_Role`
 
 CREATE TABLE IF NOT EXISTS `Cart`
 (
-    `id`          int,
+    `id`          int PRIMARY KEY,
     `total_price` double
 );
 
