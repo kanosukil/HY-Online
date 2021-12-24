@@ -345,9 +345,9 @@ public class ServiceTest {
             System.out.println("OK 2");
         }
         Goods goodsUpdate = goods.findById(2);
-        goodsUpdate.setName("ZiWeiBang");
+        goodsUpdate.setName("<<SpringBoot 框架入门>>");
         goodsUpdate.setPrice(1000.0);
-        goodsUpdate.setDescription("sex education tools");
+        goodsUpdate.setDescription("a book about Spring Boot");
         if (goods.update(goodsUpdate)) {
             System.out.println("OK 3");
         }
@@ -358,7 +358,7 @@ public class ServiceTest {
             System.out.println("OK 4");
         }
         Store storeUpdate = store.findById(2);
-        storeUpdate.setName("牛牛adult");
+        storeUpdate.setName("JavaLearn");
         if (store.update(storeUpdate)) {
             System.out.println("OK 5");
         }
