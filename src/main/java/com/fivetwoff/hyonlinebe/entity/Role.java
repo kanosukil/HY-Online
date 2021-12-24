@@ -1,6 +1,7 @@
 package com.fivetwoff.hyonlinebe.entity;
 
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.stereotype.Component;
 
 /**
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
  */
 
 @Getter
+@ToString
 @Component
 public class Role {
     private Integer id;

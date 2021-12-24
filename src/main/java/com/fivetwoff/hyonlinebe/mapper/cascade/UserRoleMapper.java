@@ -15,10 +15,10 @@ import java.util.List;
 
 @Mapper
 public interface UserRoleMapper {
-    @Select("select * form user_role where user_key=#{id}")
+    @Select("select * from user_role where user_key=#{id}")
     List<UserAndRole> findByUser(Integer id);
 
-    @Select("select * form user_role where role_key=#{id}")
+    @Select("select * from user_role where role_key=#{id}")
     List<UserAndRole> findByRole(Integer id);
 
     @Delete("delete from user_role where role_key=#{id}")

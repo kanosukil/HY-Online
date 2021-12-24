@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS `Comment`
     `content` varchar(500)
 );
 
-CREATE TABLE IF NOT EXISTS `Order`
+CREATE TABLE IF NOT EXISTS `Orders`
 (
     `id`      int PRIMARY KEY UNIQUE,
     `number`  int,
@@ -86,13 +86,13 @@ ALTER TABLE `User_Order`
     ADD FOREIGN KEY (`customer_key`) REFERENCES `User` (`id`);
 
 ALTER TABLE `User_Order`
-    ADD FOREIGN KEY (`order_key`) REFERENCES `Order` (`id`);
+    ADD FOREIGN KEY (`order_key`) REFERENCES orders (`id`);
 
 ALTER TABLE `Store_Order`
     ADD FOREIGN KEY (`store_key`) REFERENCES `Store` (`id`);
 
 ALTER TABLE `Store_Order`
-    ADD FOREIGN KEY (`order_key`) REFERENCES `Order` (`id`);
+    ADD FOREIGN KEY (`order_key`) REFERENCES orders (`id`);
 
 ALTER TABLE `Store_Goods`
     ADD FOREIGN KEY (`store_key`) REFERENCES `Store` (`id`);

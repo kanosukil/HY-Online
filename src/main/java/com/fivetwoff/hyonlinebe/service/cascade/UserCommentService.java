@@ -1,9 +1,9 @@
 package com.fivetwoff.hyonlinebe.service.cascade;
 
 import com.fivetwoff.hyonlinebe.cascade.UserAndComment;
+import com.fivetwoff.hyonlinebe.mapper.CommentMapper;
+import com.fivetwoff.hyonlinebe.mapper.UserMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.UserCommentMapper;
-import com.fivetwoff.hyonlinebe.service.CommentService;
-import com.fivetwoff.hyonlinebe.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +21,9 @@ public class UserCommentService {
     @Autowired
     private UserCommentMapper userComment;
     @Autowired
-    private UserService user;
+    private UserMapper user;
     @Autowired
-    private CommentService comment;
+    private CommentMapper comment;
 
     public List<UserAndComment> findByUser(Integer id) {
         return userComment.findByUser(id);
@@ -34,22 +34,26 @@ public class UserCommentService {
     }
 
     public boolean deleteByUser(Integer id) {
+        int i = 0;
         try {
-            userComment.deleteByUser(id);
+            i = userComment.deleteByUser(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("删除了" + i + "条信息");
         return true;
     }
 
     public boolean deleteByComment(Integer id) {
+        int i = 0;
         try {
-            userComment.deleteByComment(id);
+            i = userComment.deleteByComment(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("删除了" + i + "条信息");
         return true;
     }
 

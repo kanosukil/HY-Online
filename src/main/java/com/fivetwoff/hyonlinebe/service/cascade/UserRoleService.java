@@ -1,9 +1,9 @@
 package com.fivetwoff.hyonlinebe.service.cascade;
 
 import com.fivetwoff.hyonlinebe.cascade.UserAndRole;
+import com.fivetwoff.hyonlinebe.mapper.RoleMapper;
+import com.fivetwoff.hyonlinebe.mapper.UserMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.UserRoleMapper;
-import com.fivetwoff.hyonlinebe.service.RoleService;
-import com.fivetwoff.hyonlinebe.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +21,9 @@ public class UserRoleService {
     @Autowired
     private UserRoleMapper userRole;
     @Autowired
-    private UserService user;
+    private UserMapper user;
     @Autowired
-    private RoleService role;
+    private RoleMapper role;
 
     public List<UserAndRole> findByUser(Integer id) {
         return userRole.findByUser(id);
@@ -34,22 +34,26 @@ public class UserRoleService {
     }
 
     public boolean deleteByUser(Integer id) {
+        int i = 0;
         try {
-            userRole.deleteByUser(id);
+            i = userRole.deleteByUser(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("删除了" + i + "条信息");
         return true;
     }
 
     public boolean deleteByRole(Integer id) {
+        int i = 0;
         try {
-            userRole.deleteByRole(id);
+            i = userRole.deleteByRole(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("删除了" + i + "条信息");
         return true;
     }
 

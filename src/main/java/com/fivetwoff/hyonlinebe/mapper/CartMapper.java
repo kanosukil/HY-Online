@@ -21,12 +21,12 @@ public interface CartMapper {
     @Delete("delete from cart where id=#{id}")
     int deleteById(Integer id);
 
-    @Insert("insert into cart(id, totalprice) " +
-            "values(#{id}, #{totalprice})")
+    @Insert("insert into cart(id, total_price) " +
+            "values(#{id}, #{total_price})")
     int insert(Cart cart);
 
     @Update("update cart" +
-            "       set totalprice=#{totalprice}" +
+            "       set total_price=#{total_price}" +
             "       where id=#{id}")
     int updateByPrimaryKey(Cart cart);
 }

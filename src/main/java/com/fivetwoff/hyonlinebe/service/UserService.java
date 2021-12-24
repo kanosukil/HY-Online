@@ -2,7 +2,7 @@ package com.fivetwoff.hyonlinebe.service;
 
 import com.fivetwoff.hyonlinebe.entity.User;
 import com.fivetwoff.hyonlinebe.mapper.UserMapper;
-import com.fivetwoff.hyonlinebe.service.cascade.*;
+import com.fivetwoff.hyonlinebe.mapper.cascade.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,15 +20,15 @@ public class UserService {
     @Autowired
     private UserMapper user;
     @Autowired
-    private UserCartService userCart;
+    private UserCartMapper userCart;
     @Autowired
-    private UserCommentService userComment;
+    private UserCommentMapper userComment;
     @Autowired
-    private UserOrderService userOrder;
+    private UserOrderMapper userOrder;
     @Autowired
-    private UserRoleService userRole;
+    private UserRoleMapper userRole;
     @Autowired
-    private UserStoreService userStore;
+    private UserStoreMapper userStore;
 
     public List<User> findAll() {
         return user.findAll();
@@ -39,6 +39,10 @@ public class UserService {
     }
 
     public boolean insert(User userInsert) {
+        if (user.findById(userInsert.getId()) != null) {
+            log.error("id重复");
+            return false;
+        }
         try {
             user.insert(userInsert);
         } catch (Exception ex) {
@@ -49,28 +53,51 @@ public class UserService {
     }
 
     public boolean deleteById(Integer id) {
-        if (userCart.deleteByUser(id) && userComment.deleteByUser(id) && userOrder.deleteByUser(id) &&
-                userRole.deleteByUser(id) && userStore.deleteByUser(id)) {
-            try {
-                user.deleteById(id);
-            } catch (Exception ex) {
-                log.error(ex.toString());
-                return false;
+        int[] i = new int[6];
+        int j = 0;
+        try {
+            j = 1;
+            i[0] = userCart.deleteByUser(id);
+            j = 2;
+            i[1] = userComment.deleteByUser(id);
+            j = 3;
+            i[2] = userOrder.deleteByUser(id);
+            j = 4;
+            i[3] = userRole.deleteByUser(id);
+            j = 5;
+            i[4] = userStore.deleteByUser(id);
+            j = 6;
+            i[5] = user.deleteById(id);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            if (j == 1) {
+                log.error("user_cart表删除异常");
+            } else if (j == 2) {
+                log.error("user_comment表删除异常");
+            } else if (j == 3) {
+                log.error("user_order表删除异常");
+            } else if (j == 4) {
+                log.error("user_role表删除异常");
+            } else if (j == 5) {
+                log.error("user_store表删除异常");
+            } else {
+                log.error("user表删除异常");
             }
-        } else {
-            log.error("user_cart表或user_comment表或user_order表或user_role表或user_store表删除user主键异常");
             return false;
         }
+        log.info("删除" + i[5] + "条信息");
         return true;
     }
 
     public boolean update(User userUpdate) {
+        int i = 0;
         try {
-            user.updateByPrimaryKey(userUpdate);
+            i = user.updateByPrimaryKey(userUpdate);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("更新了" + i + "条信息");
         return true;
     }
 }

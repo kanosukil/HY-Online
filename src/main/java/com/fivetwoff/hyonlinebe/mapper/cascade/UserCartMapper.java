@@ -15,10 +15,10 @@ import java.util.List;
 
 @Mapper
 public interface UserCartMapper {
-    @Select("select * form user_cart where user_key=#{id}")
+    @Select("select * from user_cart where user_key=#{id}")
     List<UserAndCart> findByUser(Integer id);
 
-    @Select("select * form user_cart where cart_key=#{id}")
+    @Select("select * from user_cart where cart_key=#{id}")
     List<UserAndCart> findByCart(Integer id);
 
     @Delete("delete from user_cart where user_key=#{id}")

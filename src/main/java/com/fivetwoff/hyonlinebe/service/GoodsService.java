@@ -2,8 +2,8 @@ package com.fivetwoff.hyonlinebe.service;
 
 import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.mapper.GoodsMapper;
-import com.fivetwoff.hyonlinebe.service.cascade.GoodsCartService;
-import com.fivetwoff.hyonlinebe.service.cascade.StoreGoodsService;
+import com.fivetwoff.hyonlinebe.mapper.cascade.GoodsCartMapper;
+import com.fivetwoff.hyonlinebe.mapper.cascade.StoreGoodsMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +21,9 @@ public class GoodsService {
     @Autowired
     private GoodsMapper goods;
     @Autowired
-    private GoodsCartService goodsCart;
+    private GoodsCartMapper goodsCart;
     @Autowired
-    private StoreGoodsService storeGoods;
+    private StoreGoodsMapper storeGoods;
 
     public List<Goods> findAll() {
         return goods.findAll();
@@ -34,6 +34,10 @@ public class GoodsService {
     }
 
     public boolean insert(Goods goodsInsert) {
+        if (goods.findById(goodsInsert.getId()) != null) {
+            log.error("id重复");
+            return false;
+        }
         try {
             goods.insert(goodsInsert);
         } catch (Exception ex) {
@@ -44,27 +48,39 @@ public class GoodsService {
     }
 
     public boolean deleteById(Integer id) {
-        if (goodsCart.deleteByGoods(id) && storeGoods.deleteByGoods(id)) {
-            try {
-                goods.deleteById(id);
-            } catch (Exception ex) {
-                log.error(ex.toString());
-                return false;
+        int[] i = new int[3];
+        int j = 0;
+        try {
+            j = 1;
+            i[0] = goodsCart.deleteByGoods(id);
+            j = 2;
+            i[1] = storeGoods.deleteByGoods(id);
+            j = 3;
+            i[2] = goods.deleteById(id);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            if (j == 1) {
+                log.error("goods_cart表删除异常");
+            } else if (j == 2) {
+                log.error("store_goods表删除异常");
+            } else {
+                log.error("goods表删除异常");
             }
-        } else {
-            log.error("goods_cart表或store_goods表删除goods主键异常");
             return false;
         }
+        log.info("删除" + i[2] + "条信息");
         return true;
     }
 
     public boolean update(Goods goodsUpdate) {
+        int i = 0;
         try {
-            goods.updateByPrimaryKey(goodsUpdate);
+            i = goods.updateByPrimaryKey(goodsUpdate);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("更新了" + i + "条信息");
         return true;
     }
 }

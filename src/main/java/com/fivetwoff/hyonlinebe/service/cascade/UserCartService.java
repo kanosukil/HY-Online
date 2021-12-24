@@ -1,9 +1,9 @@
 package com.fivetwoff.hyonlinebe.service.cascade;
 
 import com.fivetwoff.hyonlinebe.cascade.UserAndCart;
+import com.fivetwoff.hyonlinebe.mapper.CartMapper;
+import com.fivetwoff.hyonlinebe.mapper.UserMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.UserCartMapper;
-import com.fivetwoff.hyonlinebe.service.CartService;
-import com.fivetwoff.hyonlinebe.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +21,9 @@ public class UserCartService {
     @Autowired
     private UserCartMapper userCart;
     @Autowired
-    private UserService user;
+    private UserMapper user;
     @Autowired
-    private CartService cart;
+    private CartMapper cart;
 
     public List<UserAndCart> findByUser(Integer id) {
         return userCart.findByUser(id);
@@ -34,22 +34,26 @@ public class UserCartService {
     }
 
     public boolean deleteByUser(Integer id) {
+        int i = 0;
         try {
-            userCart.deleteByUser(id);
+            i = userCart.deleteByUser(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("删除了" + i + "条信息");
         return true;
     }
 
     public boolean deleteByCart(Integer id) {
+        int i = 0;
         try {
-            userCart.deleteByCart(id);
+            i = userCart.deleteByCart(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("删除了" + i + "条信息");
         return true;
     }
 

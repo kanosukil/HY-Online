@@ -15,10 +15,10 @@ import java.util.List;
 
 @Mapper
 public interface UserCommentMapper {
-    @Select("select * form user_comment where user_key=#{id}")
+    @Select("select * from user_comment where user_key=#{id}")
     List<UserAndComment> findByUser(Integer id);
 
-    @Select("select * form user_comment where comment_key=#{id}")
+    @Select("select * from user_comment where comment_key=#{id}")
     List<UserAndComment> findByComment(Integer id);
 
     @Delete("delete from user_comment where user_key=#{id}")

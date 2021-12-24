@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class Order {
+public class Orders {
     private Integer id;
     private Integer number;
     private String address;

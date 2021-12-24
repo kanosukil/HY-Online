@@ -15,19 +15,19 @@ import java.util.List;
 
 @Mapper
 public interface UserStoreMapper {
-    @Select("select * form user_store where store_key=#{id}")
+    @Select("select * from user_store where store_key=#{id}")
     List<UserAndStore> findByStore(Integer id);
 
-    @Select("select * form user_store where user_key=#{id}")
+    @Select("select * from user_store where master_key=#{id}")
     List<UserAndStore> findByUser(Integer id);
 
     @Delete("delete from user_store where store_key=#{id}")
     int deleteByStore(Integer id);
 
-    @Delete("delete from user_store where user_key=#{id}")
+    @Delete("delete from user_store where master_key=#{id}")
     int deleteByUser(Integer id);
 
-    @Insert("insert into user_store(user_key, store_key)" +
-            "values(#{user_key}, #{store_key})")
+    @Insert("insert into user_store(master_key, store_key)" +
+            "values(#{master_key}, #{store_key})")
     int insert(UserAndStore userAndStore);
 }

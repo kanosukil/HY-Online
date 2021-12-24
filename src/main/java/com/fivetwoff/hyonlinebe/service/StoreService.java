@@ -2,9 +2,9 @@ package com.fivetwoff.hyonlinebe.service;
 
 import com.fivetwoff.hyonlinebe.entity.Store;
 import com.fivetwoff.hyonlinebe.mapper.StoreMapper;
-import com.fivetwoff.hyonlinebe.service.cascade.StoreGoodsService;
-import com.fivetwoff.hyonlinebe.service.cascade.StoreOrderService;
-import com.fivetwoff.hyonlinebe.service.cascade.UserStoreService;
+import com.fivetwoff.hyonlinebe.mapper.cascade.StoreGoodsMapper;
+import com.fivetwoff.hyonlinebe.mapper.cascade.StoreOrderMapper;
+import com.fivetwoff.hyonlinebe.mapper.cascade.UserStoreMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -22,11 +22,11 @@ public class StoreService {
     @Autowired
     private StoreMapper store;
     @Autowired
-    private StoreGoodsService storeGoods;
+    private StoreGoodsMapper storeGoods;
     @Autowired
-    private StoreOrderService storeOrder;
+    private StoreOrderMapper storeOrder;
     @Autowired
-    private UserStoreService userStore;
+    private UserStoreMapper userStore;
 
     public List<Store> findAll() {
         return store.findAll();
@@ -37,6 +37,10 @@ public class StoreService {
     }
 
     public boolean insert(Store storeInsert) {
+        if (store.findById(storeInsert.getId()) != null) {
+            log.error("id重复");
+            return false;
+        }
         try {
             store.insert(storeInsert);
         } catch (Exception ex) {
@@ -47,27 +51,43 @@ public class StoreService {
     }
 
     public boolean deleteById(Integer id) {
-        if (userStore.deleteByStore(id) && storeGoods.deleteByStore(id) && storeOrder.deleteByStore(id)) {
-            try {
-                store.deleteById(id);
-            } catch (Exception ex) {
-                log.error(ex.toString());
-                return false;
+        int[] i = new int[4];
+        int j = 0;
+        try {
+            j = 1;
+            i[0] = storeGoods.deleteByStore(id);
+            j = 2;
+            i[1] = storeOrder.deleteByStore(id);
+            j = 3;
+            i[2] = userStore.deleteByStore(id);
+            j = 4;
+            i[3] = store.deleteById(id);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            if (j == 1) {
+                log.error("store_goods表删除异常");
+            } else if (j == 2) {
+                log.error("store_order表删除异常");
+            } else if (j == 3) {
+                log.error("user_store表删除异常");
+            } else {
+                log.error("store表删除异常");
             }
-        } else {
-            log.error("user_store表或store_order表或store_goods表删除store主键异常");
             return false;
         }
+        log.info("删除" + i[3] + "条信息");
         return true;
     }
 
     public boolean update(Store storeUpdate) {
+        int i = 0;
         try {
-            store.updateByPrimaryKey(storeUpdate);
+            i = store.updateByPrimaryKey(storeUpdate);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("更新了" + i + "条信息");
         return true;
     }
 }

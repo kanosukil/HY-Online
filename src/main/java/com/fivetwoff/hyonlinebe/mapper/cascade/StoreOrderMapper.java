@@ -15,10 +15,10 @@ import java.util.List;
 
 @Mapper
 public interface StoreOrderMapper {
-    @Select("select * form store_order where store_key=#{id}")
+    @Select("select * from store_order where store_key=#{id}")
     List<StoreAndOrder> findByStore(Integer id);
 
-    @Select("select * form store_order where order_key=#{id}")
+    @Select("select * from store_order where order_key=#{id}")
     List<StoreAndOrder> findByOrder(Integer id);
 
     @Delete("delete from store_order where store_key=#{id}")

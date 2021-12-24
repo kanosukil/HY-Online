@@ -26,8 +26,8 @@ public interface UserMapper {
     int insert(User user);
 
     @Update("update user" +
-            "       set username=#{username}" +
-            "           password_hash=#{password_hash}" +
+            "       set username=#{username}," +
+            "           password_hash=#{password_hash}," +
             "           head_portrait=#{head_portrait}" +
             "       where id=#{id}")
     int updateByPrimaryKey(User user);

@@ -15,19 +15,19 @@ import java.util.List;
 
 @Mapper
 public interface UserOrderMapper {
-    @Select("select * form user_order where user_key=#{id}")
+    @Select("select * from user_order where customer_key=#{id}")
     List<UserAndOrder> findByUser(Integer id);
 
-    @Select("select * form user_order where order_key=#{id}")
+    @Select("select * from user_order where order_key=#{id}")
     List<UserAndOrder> findByOrder(Integer id);
 
-    @Delete("delete from user_order where user_key=#{id}")
+    @Delete("delete from user_order where customer_key=#{id}")
     int deleteByUser(Integer id);
 
     @Delete("delete from user_order where order_key=#{id}")
     int deleteByOrder(Integer id);
 
-    @Insert("insert into user_order(user_key, order_key)" +
-            "values(#{user_key}, #{order_key})")
+    @Insert("insert into user_order(customer_key, order_key)" +
+            "values(#{customer_key}, #{order_key})")
     int insert(UserAndOrder userAndOrder);
 }

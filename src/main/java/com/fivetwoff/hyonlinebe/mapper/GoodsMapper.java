@@ -26,9 +26,9 @@ public interface GoodsMapper {
     int insert(Goods goods);
 
     @Update("update goods" +
-            "       set name=#{name}" +
-            "           img#{img}" +
-            "           price=#{price}" +
+            "       set name=#{name}," +
+            "           img=#{img}," +
+            "           price=#{price}," +
             "           description=#{description}" +
             "       where id=#{id}")
     int updateByPrimaryKey(Goods goods);

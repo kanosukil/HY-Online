@@ -1,9 +1,9 @@
 package com.fivetwoff.hyonlinebe.service.cascade;
 
 import com.fivetwoff.hyonlinebe.cascade.StoreAndOrder;
+import com.fivetwoff.hyonlinebe.mapper.OrdersMapper;
+import com.fivetwoff.hyonlinebe.mapper.StoreMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.StoreOrderMapper;
-import com.fivetwoff.hyonlinebe.service.OrderService;
-import com.fivetwoff.hyonlinebe.service.StoreService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,9 +21,9 @@ public class StoreOrderService {
     @Autowired
     private StoreOrderMapper storeOrder;
     @Autowired
-    private StoreService store;
+    private StoreMapper store;
     @Autowired
-    private OrderService order;
+    private OrdersMapper order;
 
     public List<StoreAndOrder> findByStore(Integer id) {
         return storeOrder.findByStore(id);
@@ -34,22 +34,26 @@ public class StoreOrderService {
     }
 
     public boolean deleteByStore(Integer id) {
+        int i = 0;
         try {
-            storeOrder.deleteByStore(id);
+            i = storeOrder.deleteByStore(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("删除了" + i + "条信息");
         return true;
     }
 
     public boolean deleteByOrder(Integer id) {
+        int i = 0;
         try {
-            storeOrder.deleteByOrder(id);
+            i = storeOrder.deleteByOrder(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
         }
+        log.info("删除了" + i + "条信息");
         return true;
     }
 
