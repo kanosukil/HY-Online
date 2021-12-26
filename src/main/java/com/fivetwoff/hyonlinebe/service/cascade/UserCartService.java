@@ -8,8 +8,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-
 /**
  * @author VHBin
  * @date 2021/12/22 - 11:25
@@ -25,11 +23,11 @@ public class UserCartService {
     @Autowired
     private CartMapper cart;
 
-    public List<UserAndCart> findByUser(Integer id) {
+    public UserAndCart findByUser(Integer id) {
         return userCart.findByUser(id);
     }
 
-    public List<UserAndCart> findByCart(Integer id) {
+    public UserAndCart findByCart(Integer id) {
         return userCart.findByCart(id);
     }
 
@@ -65,12 +63,21 @@ public class UserCartService {
             return false;
         } else {
             try {
-                userCart.insert(userAndCart);
+                if (userCart.findByUser(userKey) != null) {
+                    log.error("user对象已存在");
+                    return false;
+                } else if (userCart.findByCart(cartKey) != null) {
+                    log.error("cart对象已存在");
+                    return false;
+                } else {
+                    userCart.insert(userAndCart);
+                }
             } catch (Exception ex) {
                 log.error(ex.toString());
                 return false;
             }
         }
+        log.info("user_cart插入成功");
         return true;
     }
 }

@@ -6,8 +6,6 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Select;
 
-import java.util.List;
-
 /**
  * @author VHBin
  * @date 2021/12/22 - 11:26
@@ -16,10 +14,10 @@ import java.util.List;
 @Mapper
 public interface UserCartMapper {
     @Select("select * from user_cart where user_key=#{id}")
-    List<UserAndCart> findByUser(Integer id);
+    UserAndCart findByUser(Integer id);
 
     @Select("select * from user_cart where cart_key=#{id}")
-    List<UserAndCart> findByCart(Integer id);
+    UserAndCart findByCart(Integer id);
 
     @Delete("delete from user_cart where user_key=#{id}")
     int deleteByUser(Integer id);
