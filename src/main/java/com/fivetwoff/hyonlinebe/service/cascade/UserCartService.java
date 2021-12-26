@@ -25,7 +25,7 @@ public class UserCartService {
     @Autowired
     private CartMapper cart;
 
-    public List<UserAndCart> findByUser(Integer id) {
+    public UserAndCart findByUser(Integer id) {
         return userCart.findByUser(id);
     }
 

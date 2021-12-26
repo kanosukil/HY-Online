@@ -16,7 +16,7 @@ import java.util.List;
 @Mapper
 public interface UserCartMapper {
     @Select("select * from user_cart where user_key=#{id}")
-    List<UserAndCart> findByUser(Integer id);
+    UserAndCart findByUser(Integer id);
 
     @Select("select * from user_cart where cart_key=#{id}")
     List<UserAndCart> findByCart(Integer id);
