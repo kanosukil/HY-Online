@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS `User`
 (
     `id`            int PRIMARY KEY UNIQUE,
     `username`      varchar(20),
-    `password_hash` varchar(20),
+    `password_hash` varchar(100),
     `head_portrait` varchar(100)
 );
 
