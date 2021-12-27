@@ -33,7 +33,6 @@ public class CartController {
 
     @GetMapping("/cart")
     public Map<String, Object> getCart(@RequestParam("uId") String uId) { //CartGoodsList
-        List<Number> list = new ArrayList<>();
         int cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
         List<GoodsAndCart> gcList = gcService.findByCart(cId);
         Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
