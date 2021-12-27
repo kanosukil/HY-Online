@@ -14,5 +14,5 @@ public class User {
     private Integer id;
     private String username;
     private String password_hash;
-    private String head_portrait;
+    private String head_portrait = "default";
 }

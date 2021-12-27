@@ -21,15 +21,16 @@ public interface GoodsMapper {
     @Delete("delete from goods where id=#{id}")
     int deleteById(Integer id);
 
-    @Insert("insert into goods(id, name, img, price, description)" +
-            "values(#{id}, #{name}, #{img}, #{price}, #{description})")
+    @Insert("insert into goods(id, name, img, price, description, number)" +
+            "values(#{id}, #{name}, #{img}, #{price}, #{description}, #{number})")
     int insert(Goods goods);
 
     @Update("update goods" +
             "       set name=#{name}," +
             "           img=#{img}," +
             "           price=#{price}," +
-            "           description=#{description}" +
+            "           description=#{description}," +
+            "           number=#{number}" +
             "       where id=#{id}")
     int updateByPrimaryKey(Goods goods);
 }

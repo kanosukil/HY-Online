@@ -13,7 +13,8 @@ import org.springframework.stereotype.Component;
 public class Goods {
     private Integer id;
     private String name;
-    private String img;
+    private String img = "default";
     private Double price;
     private String description;
+    private Integer number = 1;
 }
