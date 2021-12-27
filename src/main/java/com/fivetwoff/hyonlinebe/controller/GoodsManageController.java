@@ -27,14 +27,14 @@ public class GoodsManageController {
     @Autowired
     private StoreService sService;
 
-    @GetMapping("")
+    @GetMapping("/show")
     public Map<String, Object> showStore(@RequestParam("uId") String uId) {
         Map<String, Object> map = new HashMap<>();
         List<Goods> goodsList = new ArrayList<>();
         Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
         String storeName = sService.findById(sId).getName();
         List<StoreAndGoods> sgList = sgService.findByStore(sId);
-        for(StoreAndGoods sg:sgList){
+        for (StoreAndGoods sg : sgList) {
             goodsList.add(gService.findById(sg.getGoods_key()));
         }
         map.put("userId", uId);
@@ -43,12 +43,12 @@ public class GoodsManageController {
         return map;
     }
 
-    @PostMapping("")
+    @PostMapping("/add")
     public void addGoods(@RequestParam("uId") String uId, @RequestBody Goods good,
                          HttpServletResponse response) {
-        if(gService.insert(good)){
+        if (gService.insert(good)) {
             response.setStatus(200);
-        }else {
+        } else {
             response.setStatus(404);
             return;
         }
@@ -59,22 +59,22 @@ public class GoodsManageController {
         sgService.insert(sg);
     }
 
-    @PostMapping("")
+    @PostMapping("/delete")
     public void deleteGoods(@RequestParam("gId") String gId, HttpServletResponse response) {
-        if(gService.deleteById(Integer.parseInt(gId))){
+        if (gService.deleteById(Integer.parseInt(gId))) {
             response.setStatus(200);
-        }else {
+        } else {
             response.setStatus(404);
             return;
         }
         sgService.deleteByGoods(Integer.parseInt(gId));
     }
 
-    @PostMapping("")
+    @PostMapping("/update")
     public void updateGoods(@RequestBody Goods good, HttpServletResponse response) {
-        if(gService.update(good)){
+        if (gService.update(good)) {
             response.setStatus(200);
-        }else {
+        } else {
             response.setStatus(404);
         }
     }

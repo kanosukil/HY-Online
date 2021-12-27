@@ -1,5 +1,6 @@
 package com.fivetwoff.hyonlinebe;
 
+import cn.hutool.core.codec.Base64;
 import com.fivetwoff.hyonlinebe.cascade.*;
 import com.fivetwoff.hyonlinebe.entity.*;
 import com.fivetwoff.hyonlinebe.service.*;
@@ -48,6 +49,26 @@ public class ServiceTest {
     private StoreService store;
     @Autowired
     private UserService user;
+
+    @Autowired
+    private GoodsCommentService goodsAndComment;
+
+    @Test
+    public void CommentGoodsTest() {
+        GoodsAndComment gc = new GoodsAndComment();
+        gc.setComment_key(1);
+        gc.setGoods_key(1);
+        goodsAndComment.insert(gc);
+        gc.setGoods_key(2);
+        goodsAndComment.insert(gc);
+        gc.setGoods_key(1);
+        gc.setComment_key(2);
+        goodsAndComment.insert(gc);
+        System.out.println(goodsAndComment.findByComment(1));
+        System.out.println(goodsAndComment.findByGoods(1));
+        goodsAndComment.deleteByComment(2);
+        goodsAndComment.deleteByGoods(2);
+    }
 
     @Test
     public void SQLSelectTest() {
@@ -120,14 +141,10 @@ public class ServiceTest {
             System.out.println(so);
         }
 
-        List<UserAndCart> userAndC = userCart.findByUser(1);
-        for (UserAndCart uc : userAndC) {
-            System.out.println(uc);
-        }
-        List<UserAndCart> cartAndU = userCart.findByCart(1);
-        for (UserAndCart uc : cartAndU) {
-            System.out.println(uc);
-        }
+        UserAndCart userAndC = userCart.findByUser(1);
+        System.out.println(userAndC);
+        UserAndCart cartAndU = userCart.findByCart(1);
+        System.out.println(cartAndU);
 
         List<UserAndComment> userAndComments = userComment.findByUser(1);
         for (UserAndComment uc : userAndComments) {
@@ -368,5 +385,17 @@ public class ServiceTest {
         if (user.update(userUpdate)) {
             System.out.println("OK 6");
         }
+    }
+
+    @Test
+    public void updateUserPassword() {
+        List<User> users = user.findAll();
+        users.get(0).setPassword_hash(Base64.encode("xxxx"));
+        users.get(1).setPassword_hash(Base64.encode("917092007"));
+        users.get(2).setPassword_hash(Base64.encode("123456"));
+        for (User u : users) {
+            user.update(u);
+        }
+
     }
 }

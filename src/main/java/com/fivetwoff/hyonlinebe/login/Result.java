@@ -11,18 +11,18 @@ import lombok.Data;
 @Data
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class Result<T> {
-    private Boolean code = false;
+    private Integer code;
     private Integer userId;
     private Boolean isAdmin = false;
     private T data;
 
-    public Result(Boolean code, Integer userId, T data) {
+    public Result(Integer code, Integer userId, T data) {
         this.code = code;
         this.userId = userId;
         this.data = data;
     }
 
-    public Result(Boolean code, Integer userId, Boolean isAdmin, T data) {
+    public Result(Integer code, Integer userId, Boolean isAdmin, T data) {
         this.code = code;
         this.userId = userId;
         this.isAdmin = isAdmin;

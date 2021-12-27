@@ -2,7 +2,6 @@ package com.fivetwoff.hyonlinebe.controller;
 
 import com.fivetwoff.hyonlinebe.DTO.SubGoods;
 import com.fivetwoff.hyonlinebe.cascade.GoodsAndCart;
-import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
 import com.fivetwoff.hyonlinebe.service.cascade.GoodsCartService;
@@ -18,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/cart")
 public class CartController {
     @Autowired
     private UserCartService ucService;
@@ -31,16 +30,15 @@ public class CartController {
     @Autowired
     private StoreService sService;
 
-    @GetMapping("/cart")
+    @GetMapping("/get")
     public Map<String, Object> getCart(@RequestParam("uId") String uId) { //CartGoodsList
-        List<Number> list = new ArrayList<>();
         int cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
         List<GoodsAndCart> gcList = gcService.findByCart(cId);
         Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
         String storeName = sService.findById(sId).getName();
         ArrayList<SubGoods> goods = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
-        for(GoodsAndCart x:gcList){
+        for (GoodsAndCart x : gcList) {
             SubGoods sg = new SubGoods();
             sg.setStoreName(storeName);
             sg.setGoods(gService.findById(x.getGoods_key()));
@@ -51,21 +49,21 @@ public class CartController {
         return map;
     }
 
-    @PostMapping("")
+    @PostMapping("/delete")
     public void deleteGood(@RequestParam("gId") String gId, HttpServletResponse response) {
-        if(!gcService.deleteByGoods(Integer.parseInt(gId))){
+        if (!gcService.deleteByGoods(Integer.parseInt(gId))) {
             response.setStatus(404);
-        }else {
+        } else {
             response.setStatus(200);
         }
     }
 
-    @PostMapping("")
+    @PostMapping("/pay")
     public void pay(@RequestParam("uId") String uId, HttpServletResponse response) {
         Integer cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
-        if(gcService.deleteByCart(cId)){
+        if (gcService.deleteByCart(cId)) {
             response.setStatus(200);
-        }else {
+        } else {
             response.setStatus(404);
         }
     }

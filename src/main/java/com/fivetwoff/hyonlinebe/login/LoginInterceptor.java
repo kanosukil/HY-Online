@@ -1,7 +1,9 @@
 package com.fivetwoff.hyonlinebe.login;
 
+import com.fivetwoff.hyonlinebe.config.SystemStatus;
 import com.google.gson.Gson;
 import io.jsonwebtoken.Claims;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
@@ -19,6 +21,10 @@ import java.io.PrintWriter;
 public class LoginInterceptor implements HandlerInterceptor {
     @Value("${interceptors.auth-ignore-uris}")
     private String authIgnoreUris;
+    @Value("${interceptors.system-maintenance}")
+    private String systemMaintenance;
+    @Autowired
+    private SystemStatus systemStatus;
 
     public static void sendJsonMessage(HttpServletResponse response, Object obj) throws Exception {
         Gson g = new Gson();
@@ -32,32 +38,44 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        String uri = request.getRequestURI();
-        String[] authIgnoreUriArr = authIgnoreUris.split(",");
-        for (String authIgnoreUri : authIgnoreUriArr) {
-            if (authIgnoreUri.equals(uri)) {
+        if (systemStatus.getStatus().equals(SystemStatus.ON)) {
+            String uri = request.getRequestURI();
+            String[] authIgnoreUriArr = authIgnoreUris.split(",");
+            for (String authIgnoreUri : authIgnoreUriArr) {
+                if (authIgnoreUri.equals(uri)) {
+                    return true;
+                }
+            }
+            if (systemMaintenance.equals(request.getRequestURI())) {
                 return true;
             }
-        }
-        String token = request.getHeader("Access-Token");
-        if (token == null) {
-            token = request.getParameter("token");
-        }
-        if (token == null) {
-            sendJsonMessage(response, new TokenStatus(null, "token为null,请先登录！"));
-            return false;
+            String token = request.getHeader("Access-Token");
+            if (token == null) {
+                token = request.getParameter("token");
+            }
+            if (token == null) {
+                sendJsonMessage(response, new TokenStatus(null, "token为null,请先登录！"));
+                return false;
+            } else {
+                Claims claims = JwtUtils.checkJWT(token);
+                if (claims == null) {
+                    sendJsonMessage(response, new TokenStatus(null, "token无效，请重新登录"));
+                    return false;
+                }
+                String id = (String) claims.get("id");
+                String username = (String) claims.get("username");
+                request.setAttribute("user_id", id);
+                request.setAttribute("username", username);
+                return true;
+            }
         } else {
-            Claims claims = JwtUtils.checkJWT(token);
-            if (claims == null) {
-                sendJsonMessage(response, new TokenStatus(null, "token无效，请重新登录"));
+            if (systemMaintenance.equals(request.getRequestURI())) {
+                response.setStatus(205);
+                return true;
+            } else {
+                response.setStatus(404);
                 return false;
             }
-            String id = (String) claims.get("id");
-            String username = (String) claims.get("username");
-            request.setAttribute("user_id", id);
-            request.setAttribute("username", username);
-            return true;
         }
-
     }
 }

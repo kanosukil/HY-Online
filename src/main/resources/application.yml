@@ -12,3 +12,4 @@ server:
 interceptors:
   # 不需要进行鉴权的接口地址，用逗号隔开
   auth-ignore-uris: /user/register, /user/login
+  system-maintenance: /maintenance

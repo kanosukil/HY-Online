@@ -10,9 +10,11 @@ import com.fivetwoff.hyonlinebe.service.cascade.UserRoleService;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,7 +41,7 @@ public class UserController {
         Result<User> result = null;
         User user = service.findByUsername(register.getUsername());
         if (user != null) {
-            result = new Result<>(false, user.getId(), user);
+            result = new Result<>(403, user.getId(), user);
         } else {
             user = new User();
             user.setId(service.findAll().size() + 1);
@@ -50,7 +52,7 @@ public class UserController {
                 ur.setUser_key(user.getId());
                 ur.setRole_key(1);
                 if (userRole.insert(ur)) {
-                    result = new Result<>(true, user.getId(), user);
+                    result = new Result<>(200, user.getId(), user);
                 } else {
                     log.error("user_role表插入失败");
                 }
@@ -84,18 +86,18 @@ public class UserController {
             }
         }
         if (token != null) {
-            result = new Result<>(true, u.getId(), isAdmin, token);
+            result = new Result<>(200, u.getId(), isAdmin, token);
         } else {
-            result = new Result<>(false, -1, null);
+            result = new Result<>(404, -1, null);
         }
         return result;
     }
 
-    @GetMapping("/user-info")
-    @ApiOperation("获取用户信息")
-    Result<User> getUserInfo(HttpServletRequest request) {
-        String userId = request.getParameter("user_id").trim();
-        User userVo = service.findById(Integer.parseInt(userId));
-        return new Result<>(true, Integer.parseInt(userId), userVo);
-    }
+//    @GetMapping("/user-info")
+//    @ApiOperation("获取用户信息")
+//    Result<User> getUserInfo(HttpServletRequest request) {
+//        String userId = request.getParameter("user_id").trim();
+//        User userVo = service.findById(Integer.parseInt(userId));
+//        return new Result<>(200, Integer.parseInt(userId), userVo);
+//    }
 }
