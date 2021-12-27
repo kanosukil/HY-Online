@@ -1,6 +1,7 @@
 package com.fivetwoff.hyonlinebe.service;
 
 import com.fivetwoff.hyonlinebe.entity.User;
+import com.fivetwoff.hyonlinebe.mapper.LoginMapper;
 import com.fivetwoff.hyonlinebe.mapper.UserMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.*;
 import lombok.extern.slf4j.Slf4j;
@@ -19,6 +20,8 @@ import java.util.List;
 public class UserService {
     @Autowired
     private UserMapper user;
+    @Autowired
+    private LoginMapper login;
     @Autowired
     private UserCartMapper userCart;
     @Autowired
@@ -99,5 +102,9 @@ public class UserService {
         }
         log.info("更新了" + i + "条信息");
         return true;
+    }
+
+    public User findByUsername(String username) {
+        return login.queryByName(username);
     }
 }
