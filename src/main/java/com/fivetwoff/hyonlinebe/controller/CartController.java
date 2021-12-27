@@ -41,21 +41,29 @@ public class CartController {
 
     @GetMapping("/get")
     public Map<String, Object> getCart(@RequestParam("uId") String uId) { //CartGoodsList
-        int cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
-        List<GoodsAndCart> gcList = gcService.findByCart(cId);
-        Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
-        String storeName = sService.findById(sId).getName();
         ArrayList<SubGoods> goods = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
-        for (GoodsAndCart x : gcList) {
-            SubGoods sg = new SubGoods();
-            sg.setStoreName(storeName);
-            sg.setGoods(gService.findById(x.getGoods_key()));
-            goods.add(sg);
+        try {
+            int cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
+            List<GoodsAndCart> gcList = gcService.findByCart(cId);
+            Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
+            String storeName = sService.findById(sId).getName();
+            for (GoodsAndCart x : gcList) {
+                SubGoods sg = new SubGoods();
+                sg.setStoreName(storeName);
+                sg.setGoods(gService.findById(x.getGoods_key()));
+                goods.add(sg);
+            }
+            map.put("userId", uId);
+            map.put("list", goods);
+            return map;
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+            goods = null;
+            map.put("list", goods);
+            map.put("userId", uId);
+            return map;
         }
-        map.put("userId", uId);
-        map.put("list", goods);
-        return map;
     }
 
     @PostMapping("/delete")
@@ -71,12 +79,13 @@ public class CartController {
 
     @PostMapping("/pay")
     public StatusCodeVO pay(@RequestParam("uId") String uId, HttpServletResponse response) {
-        Integer cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
-        List<GoodsAndCart> gc = gcService.findByCart(cId);
-        Integer oIdStart = oService.findAll().size() + 1;
+        Integer cId = null;
         try {
-            for (int i = 0; i < gc.size(); i++) {
-                Integer gKey = gc.get(i).getGoods_key();
+            cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
+            List<GoodsAndCart> gc = gcService.findByCart(cId);
+            Integer oIdStart = oService.findAll().size() + 1;
+            for (GoodsAndCart goodsAndCart : gc) {
+                Integer gKey = goodsAndCart.getGoods_key();
                 Orders o = new Orders();
                 o.setId(oIdStart);
                 o.setNumber(1);

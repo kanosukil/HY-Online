@@ -45,8 +45,8 @@ public class UserController {
         } else {
             user = new User();
             user.setId(service.findAll().size() + 1);
-            user.setUsername(Base64.encode(register.getUsername()));
-            user.setPassword_hash(register.getPassword());
+            user.setUsername(register.getUsername());
+            user.setPassword_hash(Base64.encode(register.getPassword()));
             if (service.insert(user)) {
                 UserAndRole ur = new UserAndRole();
                 ur.setUser_key(user.getId());

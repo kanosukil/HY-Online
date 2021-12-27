@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 public class GoodsUpdateDTO {
-    private GoodsUpdateVO goodsUpdateVO;
+    private GoodsUpdateVO update;
     private String gid;
     private String uid;
 }

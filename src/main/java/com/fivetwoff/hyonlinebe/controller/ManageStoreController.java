@@ -1,6 +1,7 @@
 package com.fivetwoff.hyonlinebe.controller;
 
 import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
+import com.fivetwoff.hyonlinebe.DTO.StatusVO;
 import com.fivetwoff.hyonlinebe.DTO.StoreDTO;
 import com.fivetwoff.hyonlinebe.DTO.StoreVO;
 import com.fivetwoff.hyonlinebe.cascade.StoreAndGoods;
@@ -67,9 +68,9 @@ public class ManageStoreController {
     }
 
     @GetMapping("/get_status")
-    public StatusCodeVO get() {
+    public StatusVO get() {
         System.out.println(systemStatus.getStatus());
-        return new StatusCodeVO(200);
+        return new StatusVO(200, systemStatus.getStatus());
     }
 
     // 传入数据形式: [1, 2, 3] 数组(不要带名称)

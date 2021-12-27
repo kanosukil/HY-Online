@@ -36,28 +36,35 @@ public class GoodsManageController {
     public Map<String, Object> showStore(@RequestParam("uId") String uId) {
         Map<String, Object> map = new HashMap<>();
         List<Goods> goodsList = new ArrayList<>();
-        Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
-        String storeName = sService.findById(sId).getName();
-        List<StoreAndGoods> sgList = sgService.findByStore(sId);
-        for (StoreAndGoods sg : sgList) {
-            goodsList.add(gService.findById(sg.getGoods_key()));
+        String storeName = null;
+        try {
+            Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
+            storeName = sService.findById(sId).getName();
+            List<StoreAndGoods> sgList = sgService.findByStore(sId);
+            for (StoreAndGoods sg : sgList) {
+                goodsList.add(gService.findById(sg.getGoods_key()));
+            }
+            map.put("userId", uId);
+            map.put("storeName", storeName);
+            map.put("list", goodsList);
+            return map;
+        } catch (Exception ex) {
+            map.put("userId", uId);
+            map.put("storeName", storeName);
+            map.put("list", goodsList);
+            return map;
         }
-        map.put("userId", uId);
-        map.put("storeName", storeName);
-        map.put("list", goodsList);
-        return map;
     }
 
     @PostMapping("/add")
     public StatusCodeVO addGoods(@RequestBody GoodsDTO goods,
                                  HttpServletResponse response) {
         Integer uid = Integer.parseInt(goods.getUid());
+        System.out.println(goods);
         try {
             List<UserAndStore> us = usService.findByUser(uid);
             if (us.size() == 0) {
                 throw new Exception("非商店所属者");
-            } else if (us.size() > 1) {
-                throw new Exception("商店所属异常");
             } else {
                 Goods goods1 = new Goods();
                 goods1.setId(gService.findAll().size() + 1);
@@ -79,6 +86,7 @@ public class GoodsManageController {
                 }
             }
         } catch (Exception ex) {
+            System.out.println(ex.toString());
             response.setStatus(500);
             return new StatusCodeVO(500);
         }
@@ -122,16 +130,14 @@ public class GoodsManageController {
         List<UserAndStore> us = usService.findByUser(uid);
         List<StoreAndGoods> sg = sgService.findByGoods(gid);
         try {
-            if (us.size() == 0 || sg.size() == 0) {
+            if (us.size() == 0) {
                 throw new Exception("非商店所属者");
-            } else if (us.size() > 1) {
-                throw new Exception("商店所属异常");
             } else {
                 Goods updateGoods = gService.findById(gid);
                 if (updateGoods != null) {
-                    updateGoods.setName(good.getGoodsUpdateVO().getGoodsTitle());
-                    updateGoods.setDescription(good.getGoodsUpdateVO().getGoodsSubtitle());
-                    updateGoods.setPrice(Double.parseDouble(good.getGoodsUpdateVO().getGoodsPrice()));
+                    updateGoods.setName(good.getUpdate().getGoodsTitle());
+                    updateGoods.setDescription(good.getUpdate().getGoodsSubtitle());
+                    updateGoods.setPrice(Double.parseDouble(good.getUpdate().getGoodsPrice()));
                     if (!gService.update(updateGoods)) {
                         throw new Exception("goods表更新失败");
                     }
@@ -140,6 +146,7 @@ public class GoodsManageController {
                 }
             }
         } catch (Exception e) {
+            System.out.println(e.toString());
             response.setStatus(500);
             return new StatusCodeVO(500);
         }
