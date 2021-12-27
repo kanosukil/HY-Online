@@ -1,6 +1,11 @@
 package com.fivetwoff.hyonlinebe.controller;
 
+import com.fivetwoff.hyonlinebe.DTO.GoodsDTO;
+import com.fivetwoff.hyonlinebe.DTO.GoodsDeleteDTO;
+import com.fivetwoff.hyonlinebe.DTO.GoodsUpdateDTO;
+import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
 import com.fivetwoff.hyonlinebe.cascade.StoreAndGoods;
+import com.fivetwoff.hyonlinebe.cascade.UserAndStore;
 import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
@@ -44,38 +49,101 @@ public class GoodsManageController {
     }
 
     @PostMapping("/add")
-    public void addGoods(@RequestParam("uId") String uId, @RequestBody Goods good,
-                         HttpServletResponse response) {
-        if (gService.insert(good)) {
-            response.setStatus(200);
-        } else {
-            response.setStatus(404);
-            return;
+    public StatusCodeVO addGoods(@RequestBody GoodsDTO goods,
+                                 HttpServletResponse response) {
+        Integer uid = Integer.parseInt(goods.getUid());
+        try {
+            List<UserAndStore> us = usService.findByUser(uid);
+            if (us.size() == 0) {
+                throw new Exception("非商店所属者");
+            } else if (us.size() > 1) {
+                throw new Exception("商店所属异常");
+            } else {
+                Goods goods1 = new Goods();
+                goods1.setId(gService.findAll().size() + 1);
+                goods1.setName(goods.getGoodsName());
+                goods1.setImg("default");
+                goods1.setPrice(Double.parseDouble(goods.getPrice()));
+                goods1.setDescription(goods.getDescription());
+                if (gService.insert(goods1)) {
+                    Integer storeKey = us.get(0).getStore_key();
+                    Integer goodsKey = goods1.getId();
+                    StoreAndGoods sg = new StoreAndGoods();
+                    sg.setStore_key(storeKey);
+                    sg.setGoods_key(goodsKey);
+                    if (!sgService.insert(sg)) {
+                        throw new Exception("store_goods表插入异常");
+                    }
+                } else {
+                    throw new Exception("goods表插入异常");
+                }
+            }
+        } catch (Exception ex) {
+            response.setStatus(500);
+            return new StatusCodeVO(500);
         }
-        Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
-        StoreAndGoods sg = new StoreAndGoods();
-        sg.setStore_key(sId);
-        sg.setGoods_key(good.getId());
-        sgService.insert(sg);
+        response.setStatus(200);
+        return new StatusCodeVO(200);
     }
 
     @PostMapping("/delete")
-    public void deleteGoods(@RequestParam("gId") String gId, HttpServletResponse response) {
-        if (gService.deleteById(Integer.parseInt(gId))) {
-            response.setStatus(200);
-        } else {
-            response.setStatus(404);
-            return;
+    public StatusCodeVO deleteGoods(@RequestBody GoodsDeleteDTO goodsDeleteDTO, HttpServletResponse response) {
+        Integer uid = Integer.parseInt(goodsDeleteDTO.getUid());
+        Integer gid = Integer.parseInt(goodsDeleteDTO.getGid());
+        List<UserAndStore> us = usService.findByUser(uid);
+        List<StoreAndGoods> sg = sgService.findByGoods(gid);
+        try {
+            if (us.size() == 0 || sg.size() == 0) {
+                throw new Exception("非商店所属者");
+            } else if (us.size() > 1) {
+                throw new Exception("商店所属异常");
+            } else {
+                Integer storeKey = us.get(0).getStore_key();
+                if (!sgService.deleteByGoodsAndStore(gid, storeKey)) {
+                    throw new Exception("store_goods表删除异常");
+                } else {
+                    if (!gService.deleteById(gid)) {
+                        throw new Exception("goods表删除异常");
+                    }
+                }
+            }
+        } catch (Exception ex) {
+            response.setStatus(500);
+            return new StatusCodeVO(500);
         }
-        sgService.deleteByGoods(Integer.parseInt(gId));
+        response.setStatus(200);
+        return new StatusCodeVO(200);
     }
 
     @PostMapping("/update")
-    public void updateGoods(@RequestBody Goods good, HttpServletResponse response) {
-        if (gService.update(good)) {
-            response.setStatus(200);
-        } else {
-            response.setStatus(404);
+    public StatusCodeVO updateGoods(@RequestBody GoodsUpdateDTO good, HttpServletResponse response) {
+        Integer uid = Integer.parseInt(good.getUid());
+        Integer gid = Integer.parseInt(good.getGid());
+        List<UserAndStore> us = usService.findByUser(uid);
+        List<StoreAndGoods> sg = sgService.findByGoods(gid);
+        try {
+            if (us.size() == 0 || sg.size() == 0) {
+                throw new Exception("非商店所属者");
+            } else if (us.size() > 1) {
+                throw new Exception("商店所属异常");
+            } else {
+                Goods updateGoods = gService.findById(gid);
+                if (updateGoods != null) {
+                    updateGoods.setName(good.getGoodsUpdateVO().getGoodsTitle());
+                    updateGoods.setDescription(good.getGoodsUpdateVO().getGoodsSubtitle());
+                    updateGoods.setPrice(Double.parseDouble(good.getGoodsUpdateVO().getGoodsPrice()));
+                    if (!gService.update(updateGoods)) {
+                        throw new Exception("goods表更新失败");
+                    }
+                } else {
+                    throw new Exception("商品未找到");
+                }
+            }
+        } catch (Exception e) {
+            response.setStatus(500);
+            return new StatusCodeVO(500);
         }
+        response.setStatus(200);
+        return new StatusCodeVO(200);
     }
 }

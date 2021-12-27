@@ -57,6 +57,18 @@ public class StoreGoodsService {
         return true;
     }
 
+    public boolean deleteByGoodsAndStore(Integer gid, Integer sid) {
+        int i = 0;
+        try {
+            i = storeGoods.deleteByStoreAndGoods(gid, sid);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return false;
+        }
+        log.info("删除了" + i + "条信息");
+        return true;
+    }
+
     public boolean insert(StoreAndGoods storeAndGoods) {
         Integer storeKey = storeAndGoods.getStore_key();
         Integer goodsKey = storeAndGoods.getGoods_key();

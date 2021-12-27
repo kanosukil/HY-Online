@@ -1,12 +1,15 @@
 package com.fivetwoff.hyonlinebe.controller;
 
+import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
 import com.fivetwoff.hyonlinebe.DTO.SubGoods;
 import com.fivetwoff.hyonlinebe.cascade.GoodsAndCart;
+import com.fivetwoff.hyonlinebe.cascade.GoodsAndOrder;
+import com.fivetwoff.hyonlinebe.cascade.UserAndOrder;
+import com.fivetwoff.hyonlinebe.entity.Orders;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
+import com.fivetwoff.hyonlinebe.service.OrderService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
-import com.fivetwoff.hyonlinebe.service.cascade.GoodsCartService;
-import com.fivetwoff.hyonlinebe.service.cascade.UserCartService;
-import com.fivetwoff.hyonlinebe.service.cascade.UserStoreService;
+import com.fivetwoff.hyonlinebe.service.cascade.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,6 +32,12 @@ public class CartController {
     private UserStoreService usService;
     @Autowired
     private StoreService sService;
+    @Autowired
+    private OrderService oService;
+    @Autowired
+    private UserOrderService uoService;
+    @Autowired
+    private GoodsOrderService goService;
 
     @GetMapping("/get")
     public Map<String, Object> getCart(@RequestParam("uId") String uId) { //CartGoodsList
@@ -50,21 +59,57 @@ public class CartController {
     }
 
     @PostMapping("/delete")
-    public void deleteGood(@RequestParam("gId") String gId, HttpServletResponse response) {
+    public StatusCodeVO deleteGood(@RequestParam("gId") String gId, HttpServletResponse response) {
         if (!gcService.deleteByGoods(Integer.parseInt(gId))) {
             response.setStatus(404);
+            return new StatusCodeVO(404);
         } else {
             response.setStatus(200);
+            return new StatusCodeVO(200);
         }
     }
 
     @PostMapping("/pay")
-    public void pay(@RequestParam("uId") String uId, HttpServletResponse response) {
+    public StatusCodeVO pay(@RequestParam("uId") String uId, HttpServletResponse response) {
         Integer cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
+        List<GoodsAndCart> gc = gcService.findByCart(cId);
+        Integer oIdStart = oService.findAll().size() + 1;
+        try {
+            for (int i = 0; i < gc.size(); i++) {
+                Integer gKey = gc.get(i).getGoods_key();
+                Orders o = new Orders();
+                o.setId(oIdStart);
+                o.setNumber(1);
+                o.setAddress("default");
+                if (oService.insert(o)) {
+                    GoodsAndOrder go = new GoodsAndOrder();
+                    go.setGoods_key(gKey);
+                    go.setOrder_key(oIdStart);
+                    if (!goService.insert(go)) {
+                        throw new Exception("goods_order表插入失败");
+                    }
+                    UserAndOrder uo = new UserAndOrder();
+                    uo.setCustomer_key(Integer.parseInt(uId));
+                    uo.setOrder_key(oIdStart);
+                    if (!uoService.insert(uo)) {
+                        throw new Exception("user_order表插入是失败");
+                    }
+                } else {
+                    throw new Exception("order表插入失败");
+                }
+                oIdStart++;
+            }
+        } catch (Exception ex) {
+            response.setStatus(500);
+            return new StatusCodeVO(500);
+        }
+
         if (gcService.deleteByCart(cId)) {
             response.setStatus(200);
+            return new StatusCodeVO(200);
         } else {
             response.setStatus(404);
+            return new StatusCodeVO(404);
         }
     }
 }

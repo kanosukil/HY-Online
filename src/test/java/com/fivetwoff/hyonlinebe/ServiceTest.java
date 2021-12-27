@@ -24,7 +24,7 @@ public class ServiceTest {
     @Autowired
     private StoreGoodsService storeGoods;
     @Autowired
-    private StoreOrderService storeOrder;
+    private GoodsOrderService storeOrder;
     @Autowired
     private UserCartService userCart;
     @Autowired
@@ -55,19 +55,7 @@ public class ServiceTest {
 
     @Test
     public void CommentGoodsTest() {
-        GoodsAndComment gc = new GoodsAndComment();
-        gc.setComment_key(1);
-        gc.setGoods_key(1);
-        goodsAndComment.insert(gc);
-        gc.setGoods_key(2);
-        goodsAndComment.insert(gc);
-        gc.setGoods_key(1);
-        gc.setComment_key(2);
-        goodsAndComment.insert(gc);
-        System.out.println(goodsAndComment.findByComment(1));
-        System.out.println(goodsAndComment.findByGoods(1));
-        goodsAndComment.deleteByComment(2);
-        goodsAndComment.deleteByGoods(2);
+        System.out.println(order.findAll().size());
     }
 
     @Test
@@ -132,12 +120,12 @@ public class ServiceTest {
             System.out.println(sg);
         }
 
-        List<StoreAndOrder> storeAndO = storeOrder.findByStore(1);
-        for (StoreAndOrder so : storeAndO) {
+        List<GoodsAndOrder> storeAndO = storeOrder.findByStore(1);
+        for (GoodsAndOrder so : storeAndO) {
             System.out.println(so);
         }
-        List<StoreAndOrder> orderAndS = storeOrder.findByOrder(1);
-        for (StoreAndOrder so : orderAndS) {
+        List<GoodsAndOrder> orderAndS = storeOrder.findByOrder(1);
+        for (GoodsAndOrder so : orderAndS) {
             System.out.println(so);
         }
 
@@ -239,10 +227,10 @@ public class ServiceTest {
         if (storeGoods.insert(storeAndGoodsTest)) {
             System.out.println("OK 8");
         }
-        StoreAndOrder storeAndOrderTest = new StoreAndOrder();
-        storeAndOrderTest.setStore_key(2);
-        storeAndOrderTest.setOrder_key(2);
-        if (storeOrder.insert(storeAndOrderTest)) {
+        GoodsAndOrder goodsAndOrderTest = new GoodsAndOrder();
+        goodsAndOrderTest.setGoods_key(2);
+        goodsAndOrderTest.setOrder_key(2);
+        if (storeOrder.insert(goodsAndOrderTest)) {
             System.out.println("OK 9");
         }
         UserAndCart userAndCartTest = new UserAndCart();

@@ -3,7 +3,6 @@ package com.fivetwoff.hyonlinebe.service;
 import com.fivetwoff.hyonlinebe.entity.Store;
 import com.fivetwoff.hyonlinebe.mapper.StoreMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.StoreGoodsMapper;
-import com.fivetwoff.hyonlinebe.mapper.cascade.StoreOrderMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.UserStoreMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,8 +22,6 @@ public class StoreService {
     private StoreMapper store;
     @Autowired
     private StoreGoodsMapper storeGoods;
-    @Autowired
-    private StoreOrderMapper storeOrder;
     @Autowired
     private UserStoreMapper userStore;
 
@@ -56,8 +53,6 @@ public class StoreService {
         try {
             j = 1;
             i[0] = storeGoods.deleteByStore(id);
-            j = 2;
-            i[1] = storeOrder.deleteByStore(id);
             j = 3;
             i[2] = userStore.deleteByStore(id);
             j = 4;
@@ -66,8 +61,6 @@ public class StoreService {
             log.error(ex.toString());
             if (j == 1) {
                 log.error("store_goods表删除异常");
-            } else if (j == 2) {
-                log.error("store_order表删除异常");
             } else if (j == 3) {
                 log.error("user_store表删除异常");
             } else {

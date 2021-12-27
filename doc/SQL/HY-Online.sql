@@ -88,10 +88,10 @@ ALTER TABLE `User_Order`
 ALTER TABLE `User_Order`
     ADD FOREIGN KEY (`order_key`) REFERENCES orders (`id`);
 
-ALTER TABLE `Store_Order`
-    ADD FOREIGN KEY (`store_key`) REFERENCES `Store` (`id`);
+ALTER TABLE goods_order
+    ADD FOREIGN KEY (goods_key) REFERENCES `Store` (`id`);
 
-ALTER TABLE `Store_Order`
+ALTER TABLE goods_order
     ADD FOREIGN KEY (`order_key`) REFERENCES orders (`id`);
 
 ALTER TABLE `Store_Goods`

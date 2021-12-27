@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 
 @Data
 @Component
-public class StoreAndOrder {
-    private Integer store_key;
+public class GoodsAndOrder {
+    private Integer goods_key;
     private Integer order_key;
 }

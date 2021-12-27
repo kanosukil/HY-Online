@@ -1,10 +1,12 @@
 package com.fivetwoff.hyonlinebe.controller;
 
+import com.fivetwoff.hyonlinebe.DTO.CommentDTO;
+import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
 import com.fivetwoff.hyonlinebe.cascade.GoodsAndComment;
 import com.fivetwoff.hyonlinebe.cascade.UserAndComment;
 import com.fivetwoff.hyonlinebe.entity.Comment;
-import com.fivetwoff.hyonlinebe.mapper.CommentMapper;
 import com.fivetwoff.hyonlinebe.service.CommentService;
+import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.cascade.GoodsCommentService;
 import com.fivetwoff.hyonlinebe.service.cascade.UserCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,13 +27,15 @@ public class CommentController {
     private UserCommentService ucService;
     @Autowired
     private GoodsCommentService gcService;
+    @Autowired
+    private GoodsService gService;
 
     @GetMapping("")
-    public Map<String, List<Comment>> showComment(@RequestParam("gId") String gId){
+    public Map<String, List<Comment>> showComment(@RequestParam("gId") String gId) {
         Map<String, List<Comment>> map = new HashMap<>();
         List<GoodsAndComment> gcList = gcService.findByGoods(Integer.parseInt(gId));
         List<Comment> comments = new ArrayList<>();
-        for(GoodsAndComment gc:gcList){
+        for (GoodsAndComment gc : gcList) {
             comments.add(cService.findById(gc.getComment_key()));
         }
         map.put("comments", comments);
@@ -39,21 +43,45 @@ public class CommentController {
     }
 
     @PostMapping("")
-    public void addComment(@RequestParam("id") String gId, @RequestParam("comment") String comment, @RequestParam("userId") String uId,
-                           HttpServletResponse response){
-        Comment comment1 = new Comment();
-        comment1.setId(Integer.parseInt(gId));
-        comment1.setContent(comment);
-        if(cService.insert(comment1)){
-            response.setStatus(200);
-        }else {
+    public StatusCodeVO addComment(@RequestBody CommentDTO commentDTO,
+                                   HttpServletResponse response) {
+        String gId = commentDTO.getGid().trim();
+        String comment = commentDTO.getComment().trim();
+        String uId = commentDTO.getUid().trim();
+        System.out.println(gId + "\n" + comment + "\n" + uId);
+        if (gService.findById(Integer.parseInt(gId)) == null) {
             response.setStatus(404);
-            return;
+            System.out.println("未找到对应商品");
+            return new StatusCodeVO(404);
         }
 
-        UserAndComment uComment = new UserAndComment();
-        uComment.setUser_key(Integer.parseInt(uId));
-        uComment.setComment_key(Integer.parseInt(gId));
-        ucService.insert(uComment);
+        Comment comment1 = new Comment();
+        comment1.setId(cService.findAll().size() + 1);
+        comment1.setContent(comment);
+        try {
+            if (cService.insert(comment1)) {
+                GoodsAndComment gc = new GoodsAndComment();
+                gc.setGoods_key(Integer.parseInt(gId));
+                gc.setComment_key(comment1.getId());
+                if (gcService.insert(gc)) {
+                    UserAndComment uComment = new UserAndComment();
+                    uComment.setUser_key(Integer.parseInt(uId));
+                    uComment.setComment_key(comment1.getId());
+                    if (!ucService.insert(uComment)) {
+                        throw new Exception("user_comment表插入失败");
+                    }
+                } else {
+                    throw new Exception("goods_comment表插入失败");
+                }
+            } else {
+                throw new Exception("comment表插入失败");
+            }
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+            response.setStatus(500);
+            return new StatusCodeVO(500);
+        }
+        response.setStatus(200);
+        return new StatusCodeVO(200);
     }
 }

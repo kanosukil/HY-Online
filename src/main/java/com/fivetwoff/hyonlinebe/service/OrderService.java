@@ -2,7 +2,7 @@ package com.fivetwoff.hyonlinebe.service;
 
 import com.fivetwoff.hyonlinebe.entity.Orders;
 import com.fivetwoff.hyonlinebe.mapper.OrdersMapper;
-import com.fivetwoff.hyonlinebe.mapper.cascade.StoreOrderMapper;
+import com.fivetwoff.hyonlinebe.mapper.cascade.GoodsOrderMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.UserOrderMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,7 +23,7 @@ public class OrderService {
     @Autowired
     private UserOrderMapper userOrder;
     @Autowired
-    private StoreOrderMapper storeOrder;
+    private GoodsOrderMapper goodsOrder;
 
     public List<Orders> findAll() {
         return order.findAll();
@@ -54,7 +54,7 @@ public class OrderService {
             j = 1;
             i[0] = userOrder.deleteByOrder(id);
             j = 2;
-            i[1] = storeOrder.deleteByOrder(id);
+            i[1] = goodsOrder.deleteByOrder(id);
             j = 3;
             i[2] = order.deleteById(id);
         } catch (Exception ex) {

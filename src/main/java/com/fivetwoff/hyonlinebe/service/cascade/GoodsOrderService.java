@@ -1,9 +1,9 @@
 package com.fivetwoff.hyonlinebe.service.cascade;
 
-import com.fivetwoff.hyonlinebe.cascade.StoreAndOrder;
+import com.fivetwoff.hyonlinebe.cascade.GoodsAndOrder;
+import com.fivetwoff.hyonlinebe.mapper.GoodsMapper;
 import com.fivetwoff.hyonlinebe.mapper.OrdersMapper;
-import com.fivetwoff.hyonlinebe.mapper.StoreMapper;
-import com.fivetwoff.hyonlinebe.mapper.cascade.StoreOrderMapper;
+import com.fivetwoff.hyonlinebe.mapper.cascade.GoodsOrderMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,26 +17,26 @@ import java.util.List;
 
 @Slf4j
 @Service
-public class StoreOrderService {
+public class GoodsOrderService {
     @Autowired
-    private StoreOrderMapper storeOrder;
+    private GoodsOrderMapper goodsOrder;
     @Autowired
-    private StoreMapper store;
+    private GoodsMapper goods;
     @Autowired
     private OrdersMapper order;
 
-    public List<StoreAndOrder> findByStore(Integer id) {
-        return storeOrder.findByStore(id);
+    public List<GoodsAndOrder> findByStore(Integer id) {
+        return goodsOrder.findByGoods(id);
     }
 
-    public List<StoreAndOrder> findByOrder(Integer id) {
-        return storeOrder.findByOrder(id);
+    public List<GoodsAndOrder> findByOrder(Integer id) {
+        return goodsOrder.findByOrder(id);
     }
 
-    public boolean deleteByStore(Integer id) {
+    public boolean deleteByGoods(Integer id) {
         int i = 0;
         try {
-            i = storeOrder.deleteByStore(id);
+            i = goodsOrder.deleteByGoods(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
@@ -48,7 +48,7 @@ public class StoreOrderService {
     public boolean deleteByOrder(Integer id) {
         int i = 0;
         try {
-            i = storeOrder.deleteByOrder(id);
+            i = goodsOrder.deleteByOrder(id);
         } catch (Exception ex) {
             log.error(ex.toString());
             return false;
@@ -57,15 +57,15 @@ public class StoreOrderService {
         return true;
     }
 
-    public boolean insert(StoreAndOrder storeAndOrder) {
-        Integer storeKey = storeAndOrder.getStore_key();
-        Integer orderKey = storeAndOrder.getOrder_key();
-        if (store.findById(storeKey) == null || order.findById(orderKey) == null) {
+    public boolean insert(GoodsAndOrder goodsAndOrder) {
+        Integer storeKey = goodsAndOrder.getGoods_key();
+        Integer orderKey = goodsAndOrder.getOrder_key();
+        if (goods.findById(storeKey) == null || order.findById(orderKey) == null) {
             log.error("store表和order表内没有对应主键");
             return false;
         } else {
             try {
-                storeOrder.insert(storeAndOrder);
+                goodsOrder.insert(goodsAndOrder);
             } catch (Exception ex) {
                 log.error(ex.toString());
                 return false;

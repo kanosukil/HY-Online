@@ -19,6 +19,9 @@ import java.io.PrintWriter;
 
 @Component
 public class LoginInterceptor implements HandlerInterceptor {
+    private final String USER = "USER";
+    private final String MASTER = "MASTER";
+    private final String ADMIN = "ADMIN";
     @Value("${interceptors.auth-ignore-uris}")
     private String authIgnoreUris;
     @Value("${interceptors.system-maintenance}")
@@ -69,6 +72,29 @@ public class LoginInterceptor implements HandlerInterceptor {
                 return true;
             }
         } else {
+            String token = request.getHeader("Access-Token");
+            if (token == null) {
+                token = request.getParameter("token");
+            }
+            Claims claims = JwtUtils.checkJWT(token);
+            if (claims == null) {
+                sendJsonMessage(response, new TokenStatus(null, "token无效，请重新登录"));
+                return false;
+            }
+            String id = (String) claims.get("id");
+            String username = (String) claims.get("username");
+            String roleRank = (String) claims.get("roleRank");
+            request.setAttribute("user_id", id);
+            request.setAttribute("username", username);
+            request.setAttribute("role", roleRank);
+            String[] roles = roleRank.split(",");
+            for (String r : roles) {
+                if (this.ADMIN.equals(r.trim().toUpperCase())) {
+                    response.setStatus(200);
+                    return true;
+                }
+            }
+
             if (systemMaintenance.equals(request.getRequestURI())) {
                 response.setStatus(205);
                 return true;

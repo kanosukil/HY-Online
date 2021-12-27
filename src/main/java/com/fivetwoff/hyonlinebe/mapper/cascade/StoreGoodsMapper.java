@@ -27,6 +27,9 @@ public interface StoreGoodsMapper {
     @Delete("delete from store_goods where goods_key=#{id}")
     int deleteByGoods(Integer id);
 
+    @Delete("delete from store_goods where goods_key=#{gid} and store_key=#{sid}")
+    int deleteByStoreAndGoods(Integer gid, Integer sid);
+
     @Insert("insert into store_goods(store_key, goods_key)" +
             "values(#{store_key}, #{goods_key})")
     int insert(StoreAndGoods storeAndGoods);
