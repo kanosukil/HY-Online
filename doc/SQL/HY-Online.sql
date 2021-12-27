@@ -1,144 +1,197 @@
-CREATE TABLE IF NOT EXISTS `User`
+create table cart
 (
-    `id`            int PRIMARY KEY UNIQUE,
-    `username`      varchar(20),
-    `password_hash` varchar(100),
-    `head_portrait` varchar(100)
+    id          int    not null
+        primary key,
+    total_price double null,
+    constraint cart_id_uindex
+        unique (id)
 );
 
-CREATE TABLE IF NOT EXISTS `Goods`
+create table comment
 (
-    `id`          int PRIMARY KEY UNIQUE,
-    `name`        varchar(40),
-    `img`         varchar(100),
-    `price`       double,
-    `description` varchar(200)
+    id      int          not null
+        primary key,
+    content varchar(500) null,
+    constraint comment_id_uindex
+        unique (id)
 );
 
-CREATE TABLE IF NOT EXISTS `Store`
+create table goods
 (
-    `id`   int PRIMARY KEY UNIQUE,
-    `name` varchar(40)
+    id          int          not null
+        primary key,
+    name        varchar(40)  null,
+    img         varchar(100) null,
+    price       double       null,
+    description varchar(200) null,
+    number      int          null,
+    constraint goods_id_uindex
+        unique (id)
 );
 
-CREATE TABLE IF NOT EXISTS `Comment`
+create table goods_cart
 (
-    `id`      int PRIMARY KEY UNIQUE,
-    `content` varchar(500)
+    goods_key int null,
+    cart_key  int null,
+    constraint goods_cart_ibfk_1
+        foreign key (goods_key) references goods (id),
+    constraint goods_cart_ibfk_2
+        foreign key (cart_key) references cart (id)
 );
 
-CREATE TABLE IF NOT EXISTS `Orders`
+create index goods_key
+    on goods_cart (goods_key);
+
+create table goods_comment
 (
-    `id`      int PRIMARY KEY UNIQUE,
-    `number`  int,
-    `address` varchar(100)
+    goods_key   int null,
+    comment_key int null,
+    constraint goods_comment_comment_id_fk
+        foreign key (goods_key) references comment (id),
+    constraint goods_comment_goods_id_fk
+        foreign key (goods_key) references goods (id)
 );
 
-CREATE TABLE IF NOT EXISTS `Role`
+create table orders
 (
-    `id`   int PRIMARY KEY UNIQUE,
-    `rank` varchar(10)
+    id      int          not null
+        primary key,
+    number  int          null,
+    address varchar(100) null,
+    constraint order_id_uindex
+        unique (id)
 );
 
-CREATE TABLE IF NOT EXISTS `User_Store`
+create table goods_order
 (
-    `master_key` int,
-    `store_key`  int
+    goods_key int null,
+    order_key int null,
+    constraint goods_order_ibfk_1
+        foreign key (goods_key) references goods (id),
+    constraint goods_order_ibfk_2
+        foreign key (order_key) references orders (id)
 );
 
-CREATE TABLE IF NOT EXISTS `User_Order`
+create table role
 (
-    `customer_key` int,
-    `order_key`    int
+    id     int         not null
+        primary key,
+    `rank` varchar(10) null,
+    constraint role_id_uindex
+        unique (id)
 );
 
-CREATE TABLE IF NOT EXISTS `Store_Order`
+create table store
 (
-    `store_key` int,
-    `order_key` int
+    id   int         not null
+        primary key,
+    name varchar(40) null,
+    constraint store_id_uindex
+        unique (id)
 );
 
-CREATE TABLE IF NOT EXISTS `Store_Goods`
+create table store_goods
 (
-    `store_key` int,
-    `goods_key` int
+    store_key int null,
+    goods_key int null,
+    constraint store_goods_ibfk_1
+        foreign key (store_key) references store (id),
+    constraint store_goods_ibfk_2
+        foreign key (goods_key) references goods (id)
 );
 
-CREATE TABLE IF NOT EXISTS `User_Comment`
+create index goods_key
+    on store_goods (goods_key);
+
+create index store_key
+    on store_goods (store_key);
+
+create table user
 (
-    `user_key`    int,
-    `comment_key` int
+    id            int          not null
+        primary key,
+    username      varchar(20)  null,
+    password_hash varchar(100) null,
+    head_portrait varchar(100) null,
+    constraint user_id_uindex
+        unique (id)
 );
 
-CREATE TABLE IF NOT EXISTS `User_Role`
+create table user_cart
 (
-    `user_key` int,
-    `role_key` int
+    user_key int null,
+    cart_key int null,
+    constraint user_cart_ibfk_1
+        foreign key (user_key) references user (id),
+    constraint user_cart_ibfk_2
+        foreign key (cart_key) references cart (id)
 );
 
-ALTER TABLE `User_Store`
-    ADD FOREIGN KEY (`master_key`) REFERENCES `User` (`id`);
+create index user_key
+    on user_cart (user_key);
 
-ALTER TABLE `User_Store`
-    ADD FOREIGN KEY (`store_key`) REFERENCES `Store` (`id`);
-
-ALTER TABLE `User_Order`
-    ADD FOREIGN KEY (`customer_key`) REFERENCES `User` (`id`);
-
-ALTER TABLE `User_Order`
-    ADD FOREIGN KEY (`order_key`) REFERENCES orders (`id`);
-
-ALTER TABLE goods_order
-    ADD FOREIGN KEY (goods_key) REFERENCES `Store` (`id`);
-
-ALTER TABLE goods_order
-    ADD FOREIGN KEY (`order_key`) REFERENCES orders (`id`);
-
-ALTER TABLE `Store_Goods`
-    ADD FOREIGN KEY (`store_key`) REFERENCES `Store` (`id`);
-
-ALTER TABLE `Store_Goods`
-    ADD FOREIGN KEY (`goods_key`) REFERENCES `Goods` (`id`);
-
-ALTER TABLE `User_Comment`
-    ADD FOREIGN KEY (`user_key`) REFERENCES `User` (`id`);
-
-ALTER TABLE `User_Comment`
-    ADD FOREIGN KEY (`comment_key`) REFERENCES `Comment` (`id`);
-
-ALTER TABLE `User_Role`
-    ADD FOREIGN KEY (`user_key`) REFERENCES `User` (`id`);
-
-ALTER TABLE `User_Role`
-    ADD FOREIGN KEY (`role_key`) REFERENCES `Role` (`id`);
-
-
-CREATE TABLE IF NOT EXISTS `Cart`
+create table user_comment
 (
-    `id`          int PRIMARY KEY UNIQUE,
-    `total_price` double
+    user_key    int null,
+    comment_key int null,
+    constraint user_comment_ibfk_1
+        foreign key (user_key) references user (id),
+    constraint user_comment_ibfk_2
+        foreign key (comment_key) references comment (id)
 );
 
-CREATE TABLE IF NOT EXISTS `User_Cart`
+create index comment_key
+    on user_comment (comment_key);
+
+create index user_key
+    on user_comment (user_key);
+
+create table user_order
 (
-    `user_key` int,
-    `cart_key` int
+    customer_key int null,
+    order_key    int null,
+    constraint user_order_ibfk_1
+        foreign key (customer_key) references user (id),
+    constraint user_order_ibfk_2
+        foreign key (order_key) references orders (id)
 );
 
-ALTER TABLE `User_Cart`
-    ADD FOREIGN KEY (`user_key`) REFERENCES `User` (`id`);
+create index customer_key
+    on user_order (customer_key);
 
-ALTER TABLE `User_Cart`
-    ADD FOREIGN KEY (`cart_key`) REFERENCES `Cart` (`id`);
+create index order_key
+    on user_order (order_key);
 
-CREATE TABLE IF NOT EXISTS `Goods_Cart`
+create table user_role
 (
-    `goods_key` int,
-    `cart_key`  int
+    user_key int null,
+    role_key int null,
+    constraint user_role_ibfk_1
+        foreign key (user_key) references user (id),
+    constraint user_role_ibfk_2
+        foreign key (role_key) references role (id)
 );
 
-ALTER TABLE `Goods_Cart`
-    ADD FOREIGN KEY (`goods_key`) REFERENCES `Goods` (`id`);
+create index role_key
+    on user_role (role_key);
 
-ALTER TABLE `Goods_Cart`
-    ADD FOREIGN KEY (`cart_key`) REFERENCES `Cart` (`id`);
+create index user_key
+    on user_role (user_key);
+
+create table user_store
+(
+    master_key int null,
+    store_key  int null,
+    constraint user_store_ibfk_1
+        foreign key (master_key) references user (id),
+    constraint user_store_ibfk_2
+        foreign key (store_key) references store (id)
+);
+
+create index master_key
+    on user_store (master_key);
+
+create index store_key
+    on user_store (store_key);
+
+
