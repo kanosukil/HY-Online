@@ -3,12 +3,17 @@ package com.fivetwoff.hyonlinebe.controller;
 import com.fivetwoff.hyonlinebe.cascade.StoreAndGoods;
 import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
+import com.fivetwoff.hyonlinebe.service.StoreService;
 import com.fivetwoff.hyonlinebe.service.cascade.StoreGoodsService;
+import com.fivetwoff.hyonlinebe.service.cascade.UserStoreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletResponse;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/store")
@@ -17,34 +22,60 @@ public class GoodsManageController {
     private StoreGoodsService sgService;
     @Autowired
     private GoodsService gService;
+    @Autowired
+    private UserStoreService usService;
+    @Autowired
+    private StoreService sService;
 
     @GetMapping("")
-    public List<Goods> showStore(@RequestParam("sId") String sId) {
-        List<StoreAndGoods> sgList = sgService.findByStore(Integer.parseInt(sId));
-        ArrayList<Goods> goods = new ArrayList<>();
+    public Map<String, Object> showStore(@RequestParam("uId") String uId) {
+        Map<String, Object> map = new HashMap<>();
+        List<Goods> goodsList = new ArrayList<>();
+        Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
+        String storeName = sService.findById(sId).getName();
+        List<StoreAndGoods> sgList = sgService.findByStore(sId);
         for(StoreAndGoods sg:sgList){
-            goods.add(gService.findById(sg.getGoods_key()));
+            goodsList.add(gService.findById(sg.getGoods_key()));
         }
-        return goods;
+        map.put("userId", uId);
+        map.put("storeName", storeName);
+        map.put("list", goodsList);
+        return map;
     }
 
     @PostMapping("")
-    public void addGoods(@RequestParam("sId") String sId, @RequestBody Goods good) {
+    public void addGoods(@RequestParam("uId") String uId, @RequestBody Goods good,
+                         HttpServletResponse response) {
+        if(gService.insert(good)){
+            response.setStatus(200);
+        }else {
+            response.setStatus(404);
+            return;
+        }
+        Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
         StoreAndGoods sg = new StoreAndGoods();
-        sg.setStore_key(Integer.parseInt(sId));
+        sg.setStore_key(sId);
         sg.setGoods_key(good.getId());
         sgService.insert(sg);
-        gService.insert(good);
     }
 
     @PostMapping("")
-    public void deleteGoods(@RequestParam("gId") String gId) {
+    public void deleteGoods(@RequestParam("gId") String gId, HttpServletResponse response) {
+        if(gService.deleteById(Integer.parseInt(gId))){
+            response.setStatus(200);
+        }else {
+            response.setStatus(404);
+            return;
+        }
         sgService.deleteByGoods(Integer.parseInt(gId));
-        gService.deleteById(Integer.parseInt(gId));
     }
 
     @PostMapping("")
-    public void updateGoods(@RequestBody Goods good) {
-        gService.update(good);
+    public void updateGoods(@RequestBody Goods good, HttpServletResponse response) {
+        if(gService.update(good)){
+            response.setStatus(200);
+        }else {
+            response.setStatus(404);
+        }
     }
 }

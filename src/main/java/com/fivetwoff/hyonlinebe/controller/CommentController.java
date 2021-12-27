@@ -6,29 +6,49 @@ import com.fivetwoff.hyonlinebe.mapper.CommentMapper;
 import com.fivetwoff.hyonlinebe.service.CommentService;
 import com.fivetwoff.hyonlinebe.service.cascade.UserCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("")
+@RequestMapping("/comment")
 public class CommentController {
     @Autowired
-    private CommentService service;
+    private CommentService cService;
     @Autowired
-    private UserCommentService uService;
+    private UserCommentService ucService;
+    @Autowired
+    private GoodsCommentService gcService;
+
+    @GetMapping("")
+    public Map<String, List<Comment>> showComment(@RequestParam("gId") String gId){
+        Map<String, List<Comment>> map = new HashMap<>(3);
+        List<GoodsAndComment> gcList = gcService.findByGoods(Integer.parseInt(gId));
+        List<Comment> comments = cService.findById();
+        map.put("comments", new List<Comment>);
+        return map;
+    }
 
     @PostMapping("")
-    public void addComment(@RequestParam("id") String id, @RequestParam("comment") String comment, @RequestParam("userId") String userId){
+    public void addComment(@RequestParam("id") String gId, @RequestParam("comment") String comment, @RequestParam("userId") String uId,
+                           HttpServletResponse response){
         Comment comment1 = new Comment();
-        comment1.setId(Integer.parseInt(id));
+        comment1.setId(Integer.parseInt(gId));
         comment1.setContent(comment);
-        service.insert(comment1);
+        if(cService.insert(comment1)){
+            response.setStatus(200);
+        }else {
+            response.setStatus(404);
+            return;
+        }
 
         UserAndComment uComment = new UserAndComment();
-        uComment.setUser_key(Integer.parseInt(userId));
-        uComment.setComment_key(Integer.parseInt(id));
-        uService.insert(uComment);
+        uComment.setUser_key(Integer.parseInt(uId));
+        uComment.setComment_key(Integer.parseInt(gId));
+        ucService.insert(uComment);
     }
 }
