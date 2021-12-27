@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS `Goods`
     `name`        varchar(40),
     `img`         varchar(100),
     `price`       double,
-    `description` varchar(200)
+    `description` varchar(200),
+    `number`      int
 );
 
 CREATE TABLE IF NOT EXISTS `Store`
