@@ -16,4 +16,5 @@ public class Goods {
     private String img;
     private Double price;
     private String description;
+    private Integer number = 1;
 }
