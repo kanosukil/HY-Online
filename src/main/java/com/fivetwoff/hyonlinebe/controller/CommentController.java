@@ -1,9 +1,11 @@
 package com.fivetwoff.hyonlinebe.controller;
 
+import com.fivetwoff.hyonlinebe.cascade.GoodsAndComment;
 import com.fivetwoff.hyonlinebe.cascade.UserAndComment;
 import com.fivetwoff.hyonlinebe.entity.Comment;
 import com.fivetwoff.hyonlinebe.mapper.CommentMapper;
 import com.fivetwoff.hyonlinebe.service.CommentService;
+import com.fivetwoff.hyonlinebe.service.cascade.GoodsCommentService;
 import com.fivetwoff.hyonlinebe.service.cascade.UserCommentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -26,10 +28,13 @@ public class CommentController {
 
     @GetMapping("")
     public Map<String, List<Comment>> showComment(@RequestParam("gId") String gId){
-        Map<String, List<Comment>> map = new HashMap<>(3);
+        Map<String, List<Comment>> map = new HashMap<>();
         List<GoodsAndComment> gcList = gcService.findByGoods(Integer.parseInt(gId));
-        List<Comment> comments = cService.findById();
-        map.put("comments", new List<Comment>);
+        List<Comment> comments = new ArrayList<>();
+        for(GoodsAndComment gc:gcList){
+            comments.add(cService.findById(gc.getComment_key()));
+        }
+        map.put("comments", comments);
         return map;
     }
 
