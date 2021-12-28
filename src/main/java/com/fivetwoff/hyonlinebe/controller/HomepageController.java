@@ -60,7 +60,7 @@ public class HomepageController {
         try {
             if (cId == null) {
                 Cart c = new Cart();
-                c.setId(cService.findAll().size() + 1);
+                c.setId(cService.findAll().get(cService.findAll().size() + 1).getId() + 1);
                 c.setTotal_price(0.0);
                 if (cService.insert(c)) {
                     UserAndCart uc = new UserAndCart();

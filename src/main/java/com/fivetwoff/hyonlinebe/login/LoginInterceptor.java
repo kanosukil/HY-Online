@@ -29,6 +29,8 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Autowired
     private SystemStatus systemStatus;
 
+
+    // 返回Json形式的数据
     public static void sendJsonMessage(HttpServletResponse response, Object obj) throws Exception {
         Gson g = new Gson();
         response.setContentType("application/json; charset=utf-8");
@@ -41,30 +43,44 @@ public class LoginInterceptor implements HandlerInterceptor {
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
-        if (systemStatus.getStatus().equals(SystemStatus.ON)) {
-            String uri = request.getRequestURI();
-            String[] authIgnoreUriArr = authIgnoreUris.split(",");
-            for (String authIgnoreUri : authIgnoreUriArr) {
-                if (authIgnoreUri.equals(uri)) {
-                    return true;
-                }
-            }
-            if (systemMaintenance.equals(request.getRequestURI())) {
+        System.out.println("进入拦截器");
+        TokenStatus tokenStatus = new TokenStatus();
+        String uri = request.getRequestURI();
+        String[] authIgnoreUriArr = authIgnoreUris.split(",");
+        for (String authIgnoreUri : authIgnoreUriArr) {
+            if (authIgnoreUri.equals(uri)) {
+                System.out.println("登录/注册页面通过");
                 return true;
             }
-            String token = request.getHeader("Access-Token");
-            if (token == null) {
-                token = request.getParameter("token");
-            }
-            if (token == null) {
-                sendJsonMessage(response, new TokenStatus(null, "token为null,请先登录！"));
+        }
+
+        // 获取token
+        String token = request.getHeader("Access-Token");
+        if (token == null) {
+            token = request.getHeader("token");
+        }
+        if (token == null) {
+            token = request.getParameter("token");
+        }
+        if (token == null) {
+            response.setStatus(401);
+            tokenStatus.setData(response);
+            tokenStatus.setMsg("token为null,请先登录!");
+            sendJsonMessage(response, tokenStatus);
+            return false;
+        }
+
+        Claims claims = null;
+        if (systemStatus.getStatus().equals(SystemStatus.ON)) {
+            System.out.println("进入非维护状态的系统");
+            claims = JwtUtils.checkJWT(token);
+            if (claims == null) {
+                tokenStatus.setMsg("token无效，请重新登录");
+                response.setStatus(403);
+                tokenStatus.setData(response);
+                sendJsonMessage(response, tokenStatus);
                 return false;
             } else {
-                Claims claims = JwtUtils.checkJWT(token);
-                if (claims == null) {
-                    sendJsonMessage(response, new TokenStatus(null, "token无效，请重新登录"));
-                    return false;
-                }
                 String id = (String) claims.get("id");
                 String username = (String) claims.get("username");
                 request.setAttribute("user_id", id);
@@ -72,35 +88,37 @@ public class LoginInterceptor implements HandlerInterceptor {
                 return true;
             }
         } else {
-            String token = request.getHeader("Access-Token");
-            if (token == null) {
-                token = request.getParameter("token");
-            }
-            Claims claims = JwtUtils.checkJWT(token);
+            System.out.println("进入维护状态的系统");
+            claims = JwtUtils.checkJWT(token);
             if (claims == null) {
-                sendJsonMessage(response, new TokenStatus(null, "token无效，请重新登录"));
+                tokenStatus.setMsg("token无效，请重新登录");
+                response.setStatus(403);
+                tokenStatus.setData(response);
+                sendJsonMessage(response, tokenStatus);
                 return false;
-            }
-            String id = (String) claims.get("id");
-            String username = (String) claims.get("username");
-            String roleRank = (String) claims.get("roleRank");
-            request.setAttribute("user_id", id);
-            request.setAttribute("username", username);
-            request.setAttribute("role", roleRank);
-            String[] roles = roleRank.split(",");
-            for (String r : roles) {
-                if (this.ADMIN.equals(r.trim().toUpperCase())) {
-                    response.setStatus(200);
-                    return true;
-                }
-            }
-
-            if (systemMaintenance.equals(request.getRequestURI())) {
-                response.setStatus(205);
-                return true;
             } else {
-                response.setStatus(404);
-                return false;
+                String id = (String) claims.get("id");
+                String username = (String) claims.get("username");
+                String roleRank = (String) claims.get("roleRank");
+                request.setAttribute("user_id", id);
+                request.setAttribute("username", username);
+                request.setAttribute("role", roleRank);
+                String[] roles = roleRank.split(",");
+                // 管理员全域皆可通过
+                for (String r : roles) {
+                    if (this.ADMIN.equals(r.trim().toUpperCase())) {
+                        response.setStatus(200);
+                        return true;
+                    }
+                }
+                // 其他用户只能通过维护页面
+                if (systemMaintenance.equals(request.getRequestURI())) {
+                    response.setStatus(205);
+                    return true;
+                } else {
+                    response.setStatus(404);
+                    return false;
+                }
             }
         }
     }

@@ -44,7 +44,7 @@ public class UserController {
             result = new Result<>(403, user.getId(), user);
         } else {
             user = new User();
-            user.setId(service.findAll().size() + 1);
+            user.setId(service.findAll().get(service.findAll().size() - 1).getId() + 1);
             user.setUsername(register.getUsername());
             user.setPassword_hash(Base64.encode(register.getPassword()));
             if (service.insert(user)) {
@@ -68,17 +68,18 @@ public class UserController {
     Result<String> login(@RequestBody LoginDTO login) {
         Result<String> result = null;
         String token = null;
-        Boolean isAdmin = false;
+        boolean isAdmin = false;
         User u = service.findByUsername(login.getUsername());
         if (u != null) {
             List<UserAndRole> ur = userRole.findByUser(u.getId());
-            List<Role> r = new ArrayList<>(userRole.findByUser(u.getId()).size());
+            List<Role> r = new ArrayList<>(ur.size());
             for (UserAndRole ru : ur) {
                 r.add(role.findById(ru.getRole_key()));
                 if (ru.getRole_key() == 3) {
                     isAdmin = true;
                 }
             }
+            //解码
             String passwordDB = Base64.decodeStr(u.getPassword_hash());
             String passwordDTO = login.getPassword();
             if (passwordDB.equals(passwordDTO)) {

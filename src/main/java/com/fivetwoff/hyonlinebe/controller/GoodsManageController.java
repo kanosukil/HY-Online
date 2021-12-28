@@ -67,7 +67,7 @@ public class GoodsManageController {
                 throw new Exception("非商店所属者");
             } else {
                 Goods goods1 = new Goods();
-                goods1.setId(gService.findAll().size() + 1);
+                goods1.setId(gService.findAll().get(gService.findAll().size() - 1).getId() + 1);
                 goods1.setName(goods.getGoodsName());
                 goods1.setImg("default");
                 goods1.setPrice(Double.parseDouble(goods.getPrice()));

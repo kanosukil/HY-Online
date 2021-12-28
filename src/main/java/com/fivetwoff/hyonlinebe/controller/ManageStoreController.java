@@ -131,7 +131,7 @@ public class ManageStoreController {
             ur.setUser_key(storeDTO.getUserKey());
             if (userRole.insert(ur)) {
                 Store st = new Store();
-                st.setId(store.findAll().size() + 1);
+                st.setId(store.findAll().get(store.findAll().size() - 1).getId() + 1);
                 st.setName(storeDTO.getStoreName());
                 if (store.insert(st)) {
                     UserAndStore us = new UserAndStore();

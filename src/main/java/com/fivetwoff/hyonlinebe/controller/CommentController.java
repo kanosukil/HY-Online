@@ -56,7 +56,7 @@ public class CommentController {
         }
 
         Comment comment1 = new Comment();
-        comment1.setId(cService.findAll().size() + 1);
+        comment1.setId(cService.findAll().get(cService.findAll().size() - 1).getId() + 1);
         comment1.setContent(comment);
         try {
             if (cService.insert(comment1)) {

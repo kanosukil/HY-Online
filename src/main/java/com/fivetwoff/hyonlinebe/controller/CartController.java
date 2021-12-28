@@ -83,7 +83,7 @@ public class CartController {
         try {
             cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
             List<GoodsAndCart> gc = gcService.findByCart(cId);
-            Integer oIdStart = oService.findAll().size() + 1;
+            Integer oIdStart = oService.findAll().get(oService.findAll().size() - 1).getId() + 1;
             for (GoodsAndCart goodsAndCart : gc) {
                 Integer gKey = goodsAndCart.getGoods_key();
                 Orders o = new Orders();
