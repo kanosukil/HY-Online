@@ -59,6 +59,10 @@ public class GoodsManageController {
     @PostMapping("/add")
     public StatusCodeVO addGoods(@RequestBody GoodsDTO goods,
                                  HttpServletResponse response) {
+        if (goods == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404);
+        }
         Integer uid = Integer.parseInt(goods.getUid());
         System.out.println(goods);
         try {
@@ -96,6 +100,10 @@ public class GoodsManageController {
 
     @PostMapping("/delete")
     public StatusCodeVO deleteGoods(@RequestBody GoodsDeleteDTO goodsDeleteDTO, HttpServletResponse response) {
+        if (goodsDeleteDTO == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404);
+        }
         Integer uid = Integer.parseInt(goodsDeleteDTO.getUid());
         Integer gid = Integer.parseInt(goodsDeleteDTO.getGid());
         List<UserAndStore> us = usService.findByUser(uid);
@@ -103,8 +111,6 @@ public class GoodsManageController {
         try {
             if (us.size() == 0 || sg.size() == 0) {
                 throw new Exception("非商店所属者");
-            } else if (us.size() > 1) {
-                throw new Exception("商店所属异常");
             } else {
                 Integer storeKey = us.get(0).getStore_key();
                 if (!sgService.deleteByGoodsAndStore(gid, storeKey)) {
@@ -125,6 +131,10 @@ public class GoodsManageController {
 
     @PostMapping("/update")
     public StatusCodeVO updateGoods(@RequestBody GoodsUpdateDTO good, HttpServletResponse response) {
+        if (good == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404);
+        }
         Integer uid = Integer.parseInt(good.getUid());
         Integer gid = Integer.parseInt(good.getGid());
         List<UserAndStore> us = usService.findByUser(uid);

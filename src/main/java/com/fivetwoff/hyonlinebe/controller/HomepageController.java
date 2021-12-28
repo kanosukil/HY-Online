@@ -44,11 +44,16 @@ public class HomepageController {
         List<Goods> goodsList1 = gService.findAll();
         Map<String, List<SubGoods>> map = new HashMap<>();
         for (Goods g : goodsList1) {
-            Integer sId = sgService.findByGoods(g.getId()).get(0).getStore_key();
-            SubGoods goods = new SubGoods();
-            goods.setGoods(g);
-            goods.setStoreName(sService.findById(sId).getName());
-            goodsList.add(goods);
+            try {
+                Integer sId = sgService.findByGoods(g.getId()).get(0).getStore_key();
+                SubGoods goods = new SubGoods();
+                goods.setGoods(g);
+                goods.setStoreName(sService.findById(sId).getName());
+                goodsList.add(goods);
+            } catch (Exception e) {
+                System.out.println(e.toString());
+                goodsList.add(null);
+            }
         }
         map.put("goodsList", goodsList);
         return map;
@@ -56,6 +61,10 @@ public class HomepageController {
 
     @PostMapping("")
     public StatusCodeVO addGoods(@RequestBody HomePageDTO homePageDTO, HttpServletResponse response) {
+        if (homePageDTO == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404);
+        }
         Integer cId = ucService.findByUser(Integer.parseInt(homePageDTO.getUid())).getCart_key();
         try {
             if (cId == null) {
