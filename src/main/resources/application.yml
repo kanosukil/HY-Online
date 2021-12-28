@@ -1,9 +1,9 @@
 spring:
   datasource:
     username: root
-    password: 2000Lhb1226
+    password: 123
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/hy-online-be
+    url: jdbc:mysql://localhost:3306/hy_online_be
 
 server:
   port: 8080
