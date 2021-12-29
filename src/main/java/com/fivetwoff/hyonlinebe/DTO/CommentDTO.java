@@ -9,7 +9,7 @@ import lombok.Data;
 
 @Data
 public class CommentDTO {
-    private String gid;
+    private Integer gid;
     private String comment;
-    private String uid;
+    private Integer uid;
 }

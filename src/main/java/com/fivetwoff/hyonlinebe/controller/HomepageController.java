@@ -65,7 +65,7 @@ public class HomepageController {
             response.setStatus(404);
             return new StatusCodeVO(404);
         }
-        Integer cId = ucService.findByUser(Integer.parseInt(homePageDTO.getUid())).getCart_key();
+        Integer cId = ucService.findByUser(homePageDTO.getUid()).getCart_key();
         try {
             if (cId == null) {
                 Cart c = new Cart();
@@ -73,7 +73,7 @@ public class HomepageController {
                 c.setTotal_price(0.0);
                 if (cService.insert(c)) {
                     UserAndCart uc = new UserAndCart();
-                    uc.setUser_key(Integer.parseInt(homePageDTO.getUid()));
+                    uc.setUser_key(homePageDTO.getUid());
                     uc.setCart_key(c.getId());
                     if (!ucService.insert(uc)) {
                         throw new Exception("user_cart表插入失败");
@@ -89,7 +89,7 @@ public class HomepageController {
         }
 
         GoodsAndCart gc = new GoodsAndCart();
-        gc.setGoods_key(Integer.parseInt(homePageDTO.getGid()));
+        gc.setGoods_key(homePageDTO.getGid());
         gc.setCart_key(cId);
         if (gcService.insert(gc)) {
             response.setStatus(200);

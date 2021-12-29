@@ -1,9 +1,6 @@
 package com.fivetwoff.hyonlinebe.controller;
 
-import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
-import com.fivetwoff.hyonlinebe.DTO.StatusVO;
-import com.fivetwoff.hyonlinebe.DTO.StoreDTO;
-import com.fivetwoff.hyonlinebe.DTO.StoreVO;
+import com.fivetwoff.hyonlinebe.DTO.*;
 import com.fivetwoff.hyonlinebe.cascade.StoreAndGoods;
 import com.fivetwoff.hyonlinebe.cascade.UserAndRole;
 import com.fivetwoff.hyonlinebe.cascade.UserAndStore;
@@ -57,13 +54,14 @@ public class ManageStoreController {
 
     // 传入数据形式: true/false
     @PostMapping("/change_status")
-    public StatusCodeVO change(@RequestBody Boolean status) {
+    public StatusCodeVO change(@RequestBody SystemStatusDTO status, HttpServletResponse response) {
         System.out.println(status);
-        if (status) {
+        if (status.getStatus()) {
             systemStatus.setStatus(SystemStatus.ON);
         } else {
             systemStatus.setStatus(SystemStatus.OFF);
         }
+        response.setStatus(200);
         return new StatusCodeVO(200);
     }
 
@@ -75,9 +73,9 @@ public class ManageStoreController {
 
     // 传入数据形式: [1, 2, 3] 数组(不要带名称)
     @PostMapping("/close_store")
-    public StatusCodeVO closeStore(@RequestBody Integer[] storeIdList, HttpServletResponse response) {
+    public StatusCodeVO closeStore(@RequestBody StoreIdListDTO list, HttpServletResponse response) {
         try {
-            for (var storeId : storeIdList) {
+            for (var storeId : list.getStoreIds()) {
                 List<StoreAndGoods> sgs = storeGoods.findByStore(storeId);
                 for (StoreAndGoods sg : sgs) {
                     if (!goods.deleteById(sg.getGoods_key())) {
@@ -99,13 +97,15 @@ public class ManageStoreController {
 
     // 传入数据形式: number
     @PostMapping("/is_open_store")
-    public StoreVO isOpen(@RequestBody Integer userId) {
+    public StoreVO isOpen(@RequestBody UserIdDTO userId, HttpServletResponse response) {
         try {
-            if (user.findById(userId) == null) {
+            if (user.findById(userId.getUserId()) == null) {
                 log.error("用户未知");
+                response.setStatus(403);
                 return new StoreVO(403, false);
             }
-            List<UserAndStore> lists = userStore.findByUser(userId);
+            List<UserAndStore> lists = userStore.findByUser(userId.getUserId());
+            response.setStatus(200);
             if (lists.size() != 0) {
                 return new StoreVO(200, true);
             } else {
@@ -113,11 +113,12 @@ public class ManageStoreController {
             }
         } catch (Exception ex) {
             log.error(ex.toString());
+            response.setStatus(500);
             return new StoreVO(500, false);
         }
     }
 
-    // 传入数据形式: {"userName": "str", "userKey": number}
+    // 传入数据形式: {"storeName": "str", "userKey": number}
     @PostMapping("/create_store")
     public StatusCodeVO create(@RequestBody StoreDTO storeDTO, HttpServletResponse response) {
         try {

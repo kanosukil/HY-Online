@@ -9,6 +9,6 @@ import lombok.Data;
 
 @Data
 public class GoodsDeleteDTO {
-    private String gid;
-    private String uid;
+    private Integer gid;
+    private Integer uid;
 }

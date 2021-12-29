@@ -63,7 +63,7 @@ public class GoodsManageController {
             response.setStatus(404);
             return new StatusCodeVO(404);
         }
-        Integer uid = Integer.parseInt(goods.getUid());
+        Integer uid = goods.getUid();
         System.out.println(goods);
         try {
             List<UserAndStore> us = usService.findByUser(uid);
@@ -104,8 +104,8 @@ public class GoodsManageController {
             response.setStatus(404);
             return new StatusCodeVO(404);
         }
-        Integer uid = Integer.parseInt(goodsDeleteDTO.getUid());
-        Integer gid = Integer.parseInt(goodsDeleteDTO.getGid());
+        Integer uid = goodsDeleteDTO.getUid();
+        Integer gid = goodsDeleteDTO.getGid();
         List<UserAndStore> us = usService.findByUser(uid);
         List<StoreAndGoods> sg = sgService.findByGoods(gid);
         try {
@@ -135,8 +135,8 @@ public class GoodsManageController {
             response.setStatus(404);
             return new StatusCodeVO(404);
         }
-        Integer uid = Integer.parseInt(good.getUid());
-        Integer gid = Integer.parseInt(good.getGid());
+        Integer uid = good.getUid();
+        Integer gid = good.getGid();
         List<UserAndStore> us = usService.findByUser(uid);
         List<StoreAndGoods> sg = sgService.findByGoods(gid);
         try {

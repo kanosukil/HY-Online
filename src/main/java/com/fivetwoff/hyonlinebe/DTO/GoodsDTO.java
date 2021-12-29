@@ -12,5 +12,5 @@ public class GoodsDTO {
     private String goodsName;
     private String description;
     private String price;
-    private String uid;
+    private Integer uid;
 }

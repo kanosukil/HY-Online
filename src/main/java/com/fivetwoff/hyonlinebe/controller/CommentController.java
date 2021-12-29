@@ -45,11 +45,11 @@ public class CommentController {
     @PostMapping("")
     public StatusCodeVO addComment(@RequestBody CommentDTO commentDTO,
                                    HttpServletResponse response) {
-        String gId = commentDTO.getGid().trim();
+        Integer gId = commentDTO.getGid();
         String comment = commentDTO.getComment().trim();
-        String uId = commentDTO.getUid().trim();
+        Integer uId = commentDTO.getUid();
         System.out.println(gId + "\n" + comment + "\n" + uId);
-        if (gService.findById(Integer.parseInt(gId)) == null) {
+        if (gService.findById(gId) == null) {
             response.setStatus(404);
             System.out.println("未找到对应商品");
             return new StatusCodeVO(404);
@@ -61,11 +61,11 @@ public class CommentController {
         try {
             if (cService.insert(comment1)) {
                 GoodsAndComment gc = new GoodsAndComment();
-                gc.setGoods_key(Integer.parseInt(gId));
+                gc.setGoods_key(gId);
                 gc.setComment_key(comment1.getId());
                 if (gcService.insert(gc)) {
                     UserAndComment uComment = new UserAndComment();
-                    uComment.setUser_key(Integer.parseInt(uId));
+                    uComment.setUser_key(uId);
                     uComment.setComment_key(comment1.getId());
                     if (!ucService.insert(uComment)) {
                         throw new Exception("user_comment表插入失败");
