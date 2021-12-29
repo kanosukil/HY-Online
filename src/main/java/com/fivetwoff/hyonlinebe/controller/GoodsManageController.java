@@ -3,9 +3,9 @@ package com.fivetwoff.hyonlinebe.controller;
 import com.fivetwoff.hyonlinebe.DTO.GoodsDTO;
 import com.fivetwoff.hyonlinebe.DTO.GoodsDeleteDTO;
 import com.fivetwoff.hyonlinebe.DTO.GoodsUpdateDTO;
-import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
-import com.fivetwoff.hyonlinebe.cascade.StoreAndGoods;
-import com.fivetwoff.hyonlinebe.cascade.UserAndStore;
+import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
+import com.fivetwoff.hyonlinebe.entity.cascade.StoreAndGoods;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndStore;
 import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
@@ -47,11 +47,13 @@ public class GoodsManageController {
             map.put("userId", uId);
             map.put("storeName", storeName);
             map.put("list", goodsList);
+            map.put("info", "Normal Server");
             return map;
         } catch (Exception ex) {
             map.put("userId", uId);
             map.put("storeName", storeName);
             map.put("list", goodsList);
+            map.put("info", ex.toString());
             return map;
         }
     }
@@ -61,9 +63,9 @@ public class GoodsManageController {
                                  HttpServletResponse response) {
         if (goods == null) {
             response.setStatus(404);
-            return new StatusCodeVO(404);
+            return new StatusCodeVO(404, "goods为空");
         }
-        Integer uid = Integer.parseInt(goods.getUid());
+        Integer uid = goods.getUid();
         System.out.println(goods);
         try {
             List<UserAndStore> us = usService.findByUser(uid);
@@ -92,20 +94,20 @@ public class GoodsManageController {
         } catch (Exception ex) {
             System.out.println(ex.toString());
             response.setStatus(500);
-            return new StatusCodeVO(500);
+            return new StatusCodeVO(500, ex.toString());
         }
         response.setStatus(200);
-        return new StatusCodeVO(200);
+        return new StatusCodeVO(200, "Normal Server");
     }
 
     @PostMapping("/delete")
     public StatusCodeVO deleteGoods(@RequestBody GoodsDeleteDTO goodsDeleteDTO, HttpServletResponse response) {
         if (goodsDeleteDTO == null) {
             response.setStatus(404);
-            return new StatusCodeVO(404);
+            return new StatusCodeVO(404, "传入数据为空");
         }
-        Integer uid = Integer.parseInt(goodsDeleteDTO.getUid());
-        Integer gid = Integer.parseInt(goodsDeleteDTO.getGid());
+        Integer uid = goodsDeleteDTO.getUid();
+        Integer gid = goodsDeleteDTO.getGid();
         List<UserAndStore> us = usService.findByUser(uid);
         List<StoreAndGoods> sg = sgService.findByGoods(gid);
         try {
@@ -123,20 +125,20 @@ public class GoodsManageController {
             }
         } catch (Exception ex) {
             response.setStatus(500);
-            return new StatusCodeVO(500);
+            return new StatusCodeVO(500, ex.toString());
         }
         response.setStatus(200);
-        return new StatusCodeVO(200);
+        return new StatusCodeVO(200, "Normal Server");
     }
 
     @PostMapping("/update")
     public StatusCodeVO updateGoods(@RequestBody GoodsUpdateDTO good, HttpServletResponse response) {
         if (good == null) {
             response.setStatus(404);
-            return new StatusCodeVO(404);
+            return new StatusCodeVO(404, "goods为空");
         }
-        Integer uid = Integer.parseInt(good.getUid());
-        Integer gid = Integer.parseInt(good.getGid());
+        Integer uid = good.getUid();
+        Integer gid = good.getGid();
         List<UserAndStore> us = usService.findByUser(uid);
         List<StoreAndGoods> sg = sgService.findByGoods(gid);
         try {
@@ -158,9 +160,9 @@ public class GoodsManageController {
         } catch (Exception e) {
             System.out.println(e.toString());
             response.setStatus(500);
-            return new StatusCodeVO(500);
+            return new StatusCodeVO(500, e.toString());
         }
         response.setStatus(200);
-        return new StatusCodeVO(200);
+        return new StatusCodeVO(200, "Normal Server");
     }
 }

@@ -1,9 +1,9 @@
 package com.fivetwoff.hyonlinebe.controller;
 
 import com.fivetwoff.hyonlinebe.DTO.CommentDTO;
-import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
-import com.fivetwoff.hyonlinebe.cascade.GoodsAndComment;
-import com.fivetwoff.hyonlinebe.cascade.UserAndComment;
+import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
+import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndComment;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndComment;
 import com.fivetwoff.hyonlinebe.entity.Comment;
 import com.fivetwoff.hyonlinebe.service.CommentService;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
@@ -32,27 +32,36 @@ public class CommentController {
 
     @GetMapping("")
     public Map<String, List<Comment>> showComment(@RequestParam("gId") String gId) {
+        Comment c = new Comment();
+        c.setId(null);
+        c.setContent("Normal Server");
         Map<String, List<Comment>> map = new HashMap<>();
-        List<GoodsAndComment> gcList = gcService.findByGoods(Integer.parseInt(gId));
-        List<Comment> comments = new ArrayList<>();
-        for (GoodsAndComment gc : gcList) {
-            comments.add(cService.findById(gc.getComment_key()));
+        try {
+            List<GoodsAndComment> gcList = gcService.findByGoods(Integer.parseInt(gId));
+            List<Comment> comments = new ArrayList<>();
+            for (GoodsAndComment gc : gcList) {
+                comments.add(cService.findById(gc.getComment_key()));
+            }
+            map.put("comments", comments);
+        } catch (Exception ex) {
+            System.out.println(ex.toString());
+            c.setContent(ex.toString());
         }
-        map.put("comments", comments);
+        map.put("info", List.of(c));
         return map;
     }
 
     @PostMapping("")
     public StatusCodeVO addComment(@RequestBody CommentDTO commentDTO,
                                    HttpServletResponse response) {
-        String gId = commentDTO.getGid().trim();
+        Integer gId = commentDTO.getGid();
         String comment = commentDTO.getComment().trim();
-        String uId = commentDTO.getUid().trim();
+        Integer uId = commentDTO.getUid();
         System.out.println(gId + "\n" + comment + "\n" + uId);
-        if (gService.findById(Integer.parseInt(gId)) == null) {
+        if (gService.findById(gId) == null) {
             response.setStatus(404);
             System.out.println("未找到对应商品");
-            return new StatusCodeVO(404);
+            return new StatusCodeVO(404, "未找到对应商品");
         }
 
         Comment comment1 = new Comment();
@@ -61,11 +70,11 @@ public class CommentController {
         try {
             if (cService.insert(comment1)) {
                 GoodsAndComment gc = new GoodsAndComment();
-                gc.setGoods_key(Integer.parseInt(gId));
+                gc.setGoods_key(gId);
                 gc.setComment_key(comment1.getId());
                 if (gcService.insert(gc)) {
                     UserAndComment uComment = new UserAndComment();
-                    uComment.setUser_key(Integer.parseInt(uId));
+                    uComment.setUser_key(uId);
                     uComment.setComment_key(comment1.getId());
                     if (!ucService.insert(uComment)) {
                         throw new Exception("user_comment表插入失败");
@@ -79,9 +88,9 @@ public class CommentController {
         } catch (Exception ex) {
             System.out.println(ex.toString());
             response.setStatus(500);
-            return new StatusCodeVO(500);
+            return new StatusCodeVO(500, ex.toString());
         }
         response.setStatus(200);
-        return new StatusCodeVO(200);
+        return new StatusCodeVO(200, "Normal Server");
     }
 }

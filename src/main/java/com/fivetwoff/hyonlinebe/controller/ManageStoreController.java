@@ -1,12 +1,15 @@
 package com.fivetwoff.hyonlinebe.controller;
 
-import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
-import com.fivetwoff.hyonlinebe.DTO.StatusVO;
 import com.fivetwoff.hyonlinebe.DTO.StoreDTO;
-import com.fivetwoff.hyonlinebe.DTO.StoreVO;
-import com.fivetwoff.hyonlinebe.cascade.StoreAndGoods;
-import com.fivetwoff.hyonlinebe.cascade.UserAndRole;
-import com.fivetwoff.hyonlinebe.cascade.UserAndStore;
+import com.fivetwoff.hyonlinebe.DTO.StoreIdListDTO;
+import com.fivetwoff.hyonlinebe.DTO.SystemStatusDTO;
+import com.fivetwoff.hyonlinebe.DTO.UserIdDTO;
+import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
+import com.fivetwoff.hyonlinebe.VO.StatusVO;
+import com.fivetwoff.hyonlinebe.VO.StoreVO;
+import com.fivetwoff.hyonlinebe.entity.cascade.StoreAndGoods;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndRole;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndStore;
 import com.fivetwoff.hyonlinebe.config.SystemStatus;
 import com.fivetwoff.hyonlinebe.entity.Store;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
@@ -50,21 +53,31 @@ public class ManageStoreController {
 
     @GetMapping("/get_all_store")
     public Map<String, List<Store>> getAllStore() {
+        Store s = new Store();
+        s.setName("Normal Server");
         Map<String, List<Store>> map = new HashMap<>();
-        map.put("list", store.findAll());
+        try {
+            map.put("list", store.findAll());
+        } catch (Exception e) {
+            s.setName(e.toString());
+            map.put("list", null);
+        }
+        map.put("info", List.of(s));
         return map;
     }
 
     // 传入数据形式: true/false
     @PostMapping("/change_status")
-    public StatusCodeVO change(@RequestBody Boolean status) {
+    public StatusCodeVO change(@RequestBody SystemStatusDTO status, HttpServletResponse response) {
         System.out.println(status);
-        if (status) {
+        if (status.getStatus()) {
             systemStatus.setStatus(SystemStatus.ON);
         } else {
             systemStatus.setStatus(SystemStatus.OFF);
         }
-        return new StatusCodeVO(200);
+        response.setStatus(200);
+
+        return new StatusCodeVO(200, "Normal Server");
     }
 
     @GetMapping("/get_status")
@@ -73,11 +86,11 @@ public class ManageStoreController {
         return new StatusVO(200, systemStatus.getStatus());
     }
 
-    // 传入数据形式: [1, 2, 3] 数组(不要带名称)
+    // 传入数据形式: {"storeIds": [1, 2, 3]} 数组
     @PostMapping("/close_store")
-    public StatusCodeVO closeStore(@RequestBody Integer[] storeIdList, HttpServletResponse response) {
+    public StatusCodeVO closeStore(@RequestBody StoreIdListDTO list, HttpServletResponse response) {
         try {
-            for (var storeId : storeIdList) {
+            for (var storeId : list.getStoreIds()) {
                 List<StoreAndGoods> sgs = storeGoods.findByStore(storeId);
                 for (StoreAndGoods sg : sgs) {
                     if (!goods.deleteById(sg.getGoods_key())) {
@@ -91,40 +104,43 @@ public class ManageStoreController {
         } catch (Exception ex) {
             log.error(ex.toString());
             response.setStatus(500);
-            return new StatusCodeVO(500);
+            return new StatusCodeVO(500, ex.toString());
         }
         response.setStatus(200);
-        return new StatusCodeVO(200);
+        return new StatusCodeVO(200, "Normal Server");
     }
 
-    // 传入数据形式: number
+    // 传入数据形式: {"userId": number}
     @PostMapping("/is_open_store")
-    public StoreVO isOpen(@RequestBody Integer userId) {
+    public StoreVO isOpen(@RequestBody UserIdDTO userId, HttpServletResponse response) {
         try {
-            if (user.findById(userId) == null) {
+            if (user.findById(userId.getUserId()) == null) {
                 log.error("用户未知");
-                return new StoreVO(403, false);
+                response.setStatus(403);
+                return new StoreVO(403, false, "用户未知");
             }
-            List<UserAndStore> lists = userStore.findByUser(userId);
+            List<UserAndStore> lists = userStore.findByUser(userId.getUserId());
+            response.setStatus(200);
             if (lists.size() != 0) {
-                return new StoreVO(200, true);
+                return new StoreVO(200, true, "Normal Server");
             } else {
-                return new StoreVO(200, false);
+                return new StoreVO(200, false, "Normal Server");
             }
         } catch (Exception ex) {
             log.error(ex.toString());
-            return new StoreVO(500, false);
+            response.setStatus(500);
+            return new StoreVO(500, false, ex.toString());
         }
     }
 
-    // 传入数据形式: {"userName": "str", "userKey": number}
+    // 传入数据形式: {"storeName": "str", "userKey": number}
     @PostMapping("/create_store")
     public StatusCodeVO create(@RequestBody StoreDTO storeDTO, HttpServletResponse response) {
         try {
             if (user.findById(storeDTO.getUserKey()) == null) {
                 log.error("用户未知");
                 response.setStatus(403);
-                return new StatusCodeVO(403);
+                return new StatusCodeVO(403, "用户未知");
             }
             UserAndRole ur = new UserAndRole();
             ur.setRole_key(2);
@@ -148,9 +164,9 @@ public class ManageStoreController {
             }
         } catch (Exception ex) {
             response.setStatus(500);
-            return new StatusCodeVO(500);
+            return new StatusCodeVO(500, ex.toString());
         }
         response.setStatus(200);
-        return new StatusCodeVO(200);
+        return new StatusCodeVO(200, "Normal Server");
     }
 }

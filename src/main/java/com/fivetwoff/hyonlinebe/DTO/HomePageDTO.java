@@ -9,6 +9,6 @@ import lombok.Data;
 
 @Data
 public class HomePageDTO {
-    private String uid;
-    private String gid;
+    private Integer uid;
+    private Integer gid;
 }

@@ -1,6 +1,6 @@
 package com.fivetwoff.hyonlinebe.service.cascade;
 
-import com.fivetwoff.hyonlinebe.cascade.UserAndRole;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndRole;
 import com.fivetwoff.hyonlinebe.mapper.RoleMapper;
 import com.fivetwoff.hyonlinebe.mapper.UserMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.UserRoleMapper;

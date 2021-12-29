@@ -1,6 +1,6 @@
 package com.fivetwoff.hyonlinebe.mapper.cascade;
 
-import com.fivetwoff.hyonlinebe.cascade.UserAndComment;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndComment;
 import org.apache.ibatis.annotations.Delete;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;

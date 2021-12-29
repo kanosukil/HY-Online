@@ -1,16 +1,16 @@
-package com.fivetwoff.hyonlinebe.cascade;
+package com.fivetwoff.hyonlinebe.entity.cascade;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;
 
 /**
  * @author VHBin
- * @date 2021/12/27 - 09:28
+ * @date 2021/12/20 - 20:37
  */
 
 @Data
 @Component
-public class GoodsAndComment {
-    private Integer goods_key;
+public class UserAndComment {
+    private Integer user_key;
     private Integer comment_key;
 }

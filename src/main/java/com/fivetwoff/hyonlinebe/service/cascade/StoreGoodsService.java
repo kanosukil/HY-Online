@@ -1,6 +1,6 @@
 package com.fivetwoff.hyonlinebe.service.cascade;
 
-import com.fivetwoff.hyonlinebe.cascade.StoreAndGoods;
+import com.fivetwoff.hyonlinebe.entity.cascade.StoreAndGoods;
 import com.fivetwoff.hyonlinebe.mapper.GoodsMapper;
 import com.fivetwoff.hyonlinebe.mapper.StoreMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.StoreGoodsMapper;

@@ -1,4 +1,4 @@
-package com.fivetwoff.hyonlinebe.DTO;
+package com.fivetwoff.hyonlinebe.VO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

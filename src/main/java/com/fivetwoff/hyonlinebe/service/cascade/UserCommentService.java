@@ -1,6 +1,6 @@
 package com.fivetwoff.hyonlinebe.service.cascade;
 
-import com.fivetwoff.hyonlinebe.cascade.UserAndComment;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndComment;
 import com.fivetwoff.hyonlinebe.mapper.CommentMapper;
 import com.fivetwoff.hyonlinebe.mapper.UserMapper;
 import com.fivetwoff.hyonlinebe.mapper.cascade.UserCommentMapper;

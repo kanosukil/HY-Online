@@ -1,4 +1,4 @@
-package com.fivetwoff.hyonlinebe.cascade;
+package com.fivetwoff.hyonlinebe.entity.cascade;
 
 import lombok.Data;
 import org.springframework.stereotype.Component;

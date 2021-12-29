@@ -1,10 +1,10 @@
 package com.fivetwoff.hyonlinebe.controller;
 
-import com.fivetwoff.hyonlinebe.DTO.StatusCodeVO;
-import com.fivetwoff.hyonlinebe.DTO.SubGoods;
-import com.fivetwoff.hyonlinebe.cascade.GoodsAndCart;
-import com.fivetwoff.hyonlinebe.cascade.GoodsAndOrder;
-import com.fivetwoff.hyonlinebe.cascade.UserAndOrder;
+import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
+import com.fivetwoff.hyonlinebe.VO.SubGoodsVO;
+import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndCart;
+import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndOrder;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndOrder;
 import com.fivetwoff.hyonlinebe.entity.Orders;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.OrderService;
@@ -41,7 +41,7 @@ public class CartController {
 
     @GetMapping("/get")
     public Map<String, Object> getCart(@RequestParam("uId") String uId) { //CartGoodsList
-        ArrayList<SubGoods> goods = new ArrayList<>();
+        ArrayList<SubGoodsVO> goods = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
         try {
             int cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
@@ -49,19 +49,21 @@ public class CartController {
             Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
             String storeName = sService.findById(sId).getName();
             for (GoodsAndCart x : gcList) {
-                SubGoods sg = new SubGoods();
+                SubGoodsVO sg = new SubGoodsVO();
                 sg.setStoreName(storeName);
                 sg.setGoods(gService.findById(x.getGoods_key()));
                 goods.add(sg);
             }
             map.put("userId", uId);
             map.put("list", goods);
+            map.put("info", "Normal Server");
             return map;
         } catch (Exception ex) {
             System.out.println(ex.toString());
             goods = null;
             map.put("list", goods);
             map.put("userId", uId);
+            map.put("info", ex.toString());
             return map;
         }
     }
@@ -70,10 +72,10 @@ public class CartController {
     public StatusCodeVO deleteGood(@RequestParam("gId") String gId, HttpServletResponse response) {
         if (!gcService.deleteByGoods(Integer.parseInt(gId))) {
             response.setStatus(404);
-            return new StatusCodeVO(404);
+            return new StatusCodeVO(404, "goods_cart表删除异常");
         } else {
             response.setStatus(200);
-            return new StatusCodeVO(200);
+            return new StatusCodeVO(200, "Normal Server");
         }
     }
 
@@ -110,15 +112,15 @@ public class CartController {
             }
         } catch (Exception ex) {
             response.setStatus(500);
-            return new StatusCodeVO(500);
+            return new StatusCodeVO(500, ex.toString());
         }
 
         if (gcService.deleteByCart(cId)) {
             response.setStatus(200);
-            return new StatusCodeVO(200);
+            return new StatusCodeVO(200, "Normal Server");
         } else {
             response.setStatus(404);
-            return new StatusCodeVO(404);
+            return new StatusCodeVO(404, "goods_cart表删除异常");
         }
     }
 }
