@@ -1,5 +1,6 @@
 package com.fivetwoff.hyonlinebe.controller;
 
+import com.fivetwoff.hyonlinebe.DTO.BuyGoodsDTO;
 import com.fivetwoff.hyonlinebe.DTO.CartDeleteDTO;
 import com.fivetwoff.hyonlinebe.VO.CartGoodsVO;
 import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
@@ -44,6 +45,7 @@ public class CartController {
 
     @GetMapping("/get")
     public Map<String, Object> getCart(@RequestParam("uId") String uId) { //CartGoodsList
+        System.out.println(uId);
         Integer uid = Integer.parseInt(uId);
         List<CartGoodsVO> goods = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
@@ -93,11 +95,14 @@ public class CartController {
 
     @PostMapping("/pay")
     public StatusCodeVO pay(@RequestParam("uId") String uId, HttpServletResponse response) {
+        System.out.println(uId);
         Integer cId = null;
+        Integer uid = Integer.parseInt(uId);
         try {
-            cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
+            cId = ucService.findByUser(uid).getCart_key();
             List<GoodsAndCart> gc = gcService.findByCart(cId);
-            Integer oIdStart = oService.findAll().get(oService.findAll().size() - 1).getId() + 1;
+            Integer oIdStart = oService.findAll()
+                    .get(oService.findAll().get(oService.findAll().size() - 1).getId() - 1).getId() + 1;
             for (GoodsAndCart goodsAndCart : gc) {
                 Integer gKey = goodsAndCart.getGoods_key();
                 Orders o = new Orders();
@@ -112,7 +117,7 @@ public class CartController {
                         throw new Exception("goods_order表插入失败");
                     }
                     UserAndOrder uo = new UserAndOrder();
-                    uo.setCustomer_key(Integer.parseInt(uId));
+                    uo.setCustomer_key(uid);
                     uo.setOrder_key(oIdStart);
                     if (!uoService.insert(uo)) {
                         throw new Exception("user_order表插入是失败");
@@ -133,6 +138,57 @@ public class CartController {
         } else {
             response.setStatus(404);
             return new StatusCodeVO(404, "goods_cart表删除异常");
+        }
+    }
+
+    @PostMapping("/buy")
+    public StatusCodeVO buy(@RequestBody BuyGoodsDTO ids, HttpServletResponse response) {
+        System.out.println(ids);
+        if (ids == null || ids.getUid() == null || ids.getGids() == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404, "传入数据为空");
+        }
+        try {
+            Integer cid = ucService.findByUser(ids.getUid()).getCart_key();
+            Integer oIdStart = oService.findAll()
+                    .get(oService.findAll().get(oService.findAll().size() - 1).getId() - 1).getId() + 1;
+            List<GoodsAndCart> gcs = gcService.findByCart(cid);
+            for (Integer i : ids.getGids()) {
+                for (GoodsAndCart gc : gcs) {
+                    if (gc.getGoods_key().equals(i)) {
+                        Orders o = new Orders();
+                        o.setId(oIdStart);
+                        o.setNumber(1);
+                        o.setAddress("default");
+                        if (oService.insert(o)) {
+                            GoodsAndOrder go = new GoodsAndOrder();
+                            go.setGoods_key(i);
+                            go.setOrder_key(o.getId());
+                            if (!goService.insert(go)) {
+                                throw new Exception("goods_order表插入失败");
+                            }
+                            UserAndOrder uo = new UserAndOrder();
+                            uo.setCustomer_key(ids.getUid());
+                            uo.setOrder_key(o.getId());
+                            if (!uoService.insert(uo)) {
+                                throw new Exception("user_order表插入是失败");
+                            }
+                        } else {
+                            throw new Exception("order表插入失败");
+                        }
+                        if (!gcService.deleteByGoodsAndCart(i, cid)) {
+                            throw new Exception("goods_cart表删除失败");
+                        }
+                        oIdStart++;
+                        break;
+                    }
+                }
+            }
+            return new StatusCodeVO(200, "Normal Server");
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            response.setStatus(500);
+            return new StatusCodeVO(500, e.toString());
         }
     }
 }

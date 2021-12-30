@@ -129,6 +129,7 @@ public class ManageStoreController {
     // 传入数据形式: {"userId": number}
     @PostMapping("/is_open_store")
     public StoreVO isOpen(@RequestBody UserIdDTO userId, HttpServletResponse response) {
+        System.out.println(userId);
         if (userId == null || userId.getUserId() == null) {
             response.setStatus(404);
             return new StoreVO(404, false, "传入数据有null");
@@ -156,6 +157,7 @@ public class ManageStoreController {
     // 传入数据形式: {"storeName": "str", "userKey": number}
     @PostMapping("/create_store")
     public StatusCodeVO create(@RequestBody StoreDTO storeDTO, HttpServletResponse response) {
+        System.out.println(storeDTO);
         if (storeDTO == null || storeDTO.getUserKey() == null || storeDTO.getStoreName() == null) {
             response.setStatus(404);
             return new StatusCodeVO(404, "传入数据有null");

@@ -35,6 +35,7 @@ public class GoodsManageController {
 
     @GetMapping("/show")
     public Map<String, Object> showStore(@RequestParam("uId") String uId) {
+        System.out.println(uId);
         Integer uid = Integer.parseInt(uId);
         Map<String, Object> map = new HashMap<>();
         map.put("code", 200);
@@ -65,6 +66,7 @@ public class GoodsManageController {
     @PostMapping("/add")
     public StatusCodeVO addGoods(@RequestBody GoodsDTO goods,
                                  HttpServletResponse response) {
+        System.out.println(goods);
         if (goods == null || goods.getUid() == null || goods.getGoodsName() == null
                 || goods.getDescription() == null || goods.getPrice() == null) {
             response.setStatus(404);
@@ -107,6 +109,7 @@ public class GoodsManageController {
 
     @PostMapping("/delete")
     public StatusCodeVO deleteGoods(@RequestBody GoodsDeleteDTO goodsDeleteDTO, HttpServletResponse response) {
+        System.out.println(goodsDeleteDTO);
         if (goodsDeleteDTO == null || goodsDeleteDTO.getGid() == null ||
                 goodsDeleteDTO.getUid() == null) {
             response.setStatus(404);
@@ -139,6 +142,7 @@ public class GoodsManageController {
 
     @PostMapping("/update")
     public StatusCodeVO updateGoods(@RequestBody GoodsUpdateDTO good, HttpServletResponse response) {
+        System.out.println(good);
         if (good == null || good.getUid() == null || good.getGid() == null || good.getUpdate() == null ||
                 good.getUpdate().getGoodsPrice() == null || good.getUpdate().getGoodsTitle() == null ||
                 good.getUpdate().getGoodsSubtitle() == null) {

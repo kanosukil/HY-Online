@@ -5,7 +5,6 @@ import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
 import com.fivetwoff.hyonlinebe.VO.SubGoodsVO;
 import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndCart;
-import com.fivetwoff.hyonlinebe.service.CartService;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
 import com.fivetwoff.hyonlinebe.service.cascade.GoodsCartService;
@@ -33,8 +32,6 @@ public class HomepageController {
     private StoreGoodsService sgService;
     @Autowired
     private StoreService sService;
-    @Autowired
-    private CartService cService;
 
     @GetMapping("")
     public Map<String, Object> showGoods() {  //goodsList
@@ -67,6 +64,7 @@ public class HomepageController {
 
     @PostMapping("")
     public StatusCodeVO addGoods(@RequestBody HomePageDTO homePageDTO, HttpServletResponse response) {
+        System.out.println(homePageDTO);
         if (homePageDTO == null || homePageDTO.getUid() == null || homePageDTO.getGid() == null) {
             response.setStatus(404);
             return new StatusCodeVO(404, "传入数据有null");

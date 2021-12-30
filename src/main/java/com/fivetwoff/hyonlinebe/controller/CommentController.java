@@ -32,6 +32,7 @@ public class CommentController {
 
     @GetMapping("")
     public Map<String, Object> showComment(@RequestParam("gId") String gId) {
+        System.out.println(gId);
         Map<String, Object> map = new HashMap<>();
         List<Comment> comments = new ArrayList<>();
         map.put("code", 200);
@@ -54,6 +55,7 @@ public class CommentController {
     @PostMapping("")
     public StatusCodeVO addComment(@RequestBody CommentDTO commentDTO,
                                    HttpServletResponse response) {
+        System.out.println(commentDTO);
         if (commentDTO == null || commentDTO.getUid() == null ||
                 commentDTO.getGid() == null || commentDTO.getComment() == null) {
             response.setStatus(404);
