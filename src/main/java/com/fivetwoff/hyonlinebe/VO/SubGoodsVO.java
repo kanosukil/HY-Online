@@ -1,10 +1,12 @@
 package com.fivetwoff.hyonlinebe.VO;
 
-import com.fivetwoff.hyonlinebe.entity.Goods;
 import lombok.Data;
 
 @Data
 public class SubGoodsVO {
+    private Integer id;
     private String storeName;
-    private Goods goods;
+    private String img;
+    private String context;
+    private String price;
 }

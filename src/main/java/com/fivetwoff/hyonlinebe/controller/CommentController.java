@@ -2,9 +2,9 @@ package com.fivetwoff.hyonlinebe.controller;
 
 import com.fivetwoff.hyonlinebe.DTO.CommentDTO;
 import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
+import com.fivetwoff.hyonlinebe.entity.Comment;
 import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndComment;
 import com.fivetwoff.hyonlinebe.entity.cascade.UserAndComment;
-import com.fivetwoff.hyonlinebe.entity.Comment;
 import com.fivetwoff.hyonlinebe.service.CommentService;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.cascade.GoodsCommentService;
@@ -31,23 +31,23 @@ public class CommentController {
     private GoodsService gService;
 
     @GetMapping("")
-    public Map<String, List<Comment>> showComment(@RequestParam("gId") String gId) {
-        Comment c = new Comment();
-        c.setId(null);
-        c.setContent("Normal Server");
-        Map<String, List<Comment>> map = new HashMap<>();
+    public Map<String, Object> showComment(@RequestParam("gId") String gId) {
+        Map<String, Object> map = new HashMap<>();
+        List<Comment> comments = new ArrayList<>();
+        map.put("code", 200);
+        map.put("info", "Normal Server");
         try {
             List<GoodsAndComment> gcList = gcService.findByGoods(Integer.parseInt(gId));
-            List<Comment> comments = new ArrayList<>();
             for (GoodsAndComment gc : gcList) {
                 comments.add(cService.findById(gc.getComment_key()));
             }
-            map.put("comments", comments);
         } catch (Exception ex) {
             System.out.println(ex.toString());
-            c.setContent(ex.toString());
+            map.put("code", 500);
+            map.put("info", ex.toString());
+            comments = null;
         }
-        map.put("info", List.of(c));
+        map.put("comments", comments);
         return map;
     }
 

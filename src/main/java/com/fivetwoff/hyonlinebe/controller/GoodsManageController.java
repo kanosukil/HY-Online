@@ -3,10 +3,11 @@ package com.fivetwoff.hyonlinebe.controller;
 import com.fivetwoff.hyonlinebe.DTO.GoodsDTO;
 import com.fivetwoff.hyonlinebe.DTO.GoodsDeleteDTO;
 import com.fivetwoff.hyonlinebe.DTO.GoodsUpdateDTO;
+import com.fivetwoff.hyonlinebe.VO.GoodsVO;
 import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
+import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.entity.cascade.StoreAndGoods;
 import com.fivetwoff.hyonlinebe.entity.cascade.UserAndStore;
-import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
 import com.fivetwoff.hyonlinebe.service.cascade.StoreGoodsService;
@@ -34,28 +35,31 @@ public class GoodsManageController {
 
     @GetMapping("/show")
     public Map<String, Object> showStore(@RequestParam("uId") String uId) {
+        Integer uid = Integer.parseInt(uId);
         Map<String, Object> map = new HashMap<>();
-        List<Goods> goodsList = new ArrayList<>();
+        map.put("code", 200);
+        map.put("info", "Normal Server");
+        List<GoodsVO> goodsList = new ArrayList<>();
         String storeName = null;
         try {
-            Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
+            Integer sId = usService.findByUser(uid).get(0).getStore_key();
             storeName = sService.findById(sId).getName();
             List<StoreAndGoods> sgList = sgService.findByStore(sId);
             for (StoreAndGoods sg : sgList) {
-                goodsList.add(gService.findById(sg.getGoods_key()));
+                Goods gs = gService.findById(sg.getGoods_key());
+                goodsList.add(new GoodsVO(gs.getId(), gs.getImg(), gs.getName(),
+                        gs.getDescription(), gs.getPrice().toString(), gs.getNumber()));
             }
-            map.put("userId", uId);
-            map.put("storeName", storeName);
-            map.put("list", goodsList);
-            map.put("info", "Normal Server");
-            return map;
+
         } catch (Exception ex) {
-            map.put("userId", uId);
-            map.put("storeName", storeName);
-            map.put("list", goodsList);
+            map.put("code", 500);
             map.put("info", ex.toString());
-            return map;
         }
+        map.put("userId", uid);
+        map.put("storeName", storeName);
+        map.put("list", goodsList);
+        return map;
+
     }
 
     @PostMapping("/add")

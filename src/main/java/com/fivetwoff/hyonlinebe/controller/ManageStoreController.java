@@ -4,14 +4,15 @@ import com.fivetwoff.hyonlinebe.DTO.StoreDTO;
 import com.fivetwoff.hyonlinebe.DTO.StoreIdListDTO;
 import com.fivetwoff.hyonlinebe.DTO.SystemStatusDTO;
 import com.fivetwoff.hyonlinebe.DTO.UserIdDTO;
+import com.fivetwoff.hyonlinebe.VO.AllStoreVO;
 import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
 import com.fivetwoff.hyonlinebe.VO.StatusVO;
 import com.fivetwoff.hyonlinebe.VO.StoreVO;
+import com.fivetwoff.hyonlinebe.config.SystemStatus;
+import com.fivetwoff.hyonlinebe.entity.Store;
 import com.fivetwoff.hyonlinebe.entity.cascade.StoreAndGoods;
 import com.fivetwoff.hyonlinebe.entity.cascade.UserAndRole;
 import com.fivetwoff.hyonlinebe.entity.cascade.UserAndStore;
-import com.fivetwoff.hyonlinebe.config.SystemStatus;
-import com.fivetwoff.hyonlinebe.entity.Store;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
 import com.fivetwoff.hyonlinebe.service.UserService;
@@ -23,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,17 +54,23 @@ public class ManageStoreController {
     private SystemStatus systemStatus;
 
     @GetMapping("/get_all_store")
-    public Map<String, List<Store>> getAllStore() {
-        Store s = new Store();
-        s.setName("Normal Server");
-        Map<String, List<Store>> map = new HashMap<>();
+    public Map<String, Object> getAllStore() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("code", 200);
+        map.put("info", "Normal Server");
+        List<Store> stores = store.findAll();
+        List<AllStoreVO> allStoreVOS = new ArrayList<>();
         try {
-            map.put("list", store.findAll());
+            for (Store store : stores) {
+                allStoreVOS.add(new AllStoreVO(store.getId(), store.getName()));
+            }
         } catch (Exception e) {
-            s.setName(e.toString());
-            map.put("list", null);
+            System.out.println(e.toString());
+            map.put("code", 500);
+            map.put("info", e.toString());
+            allStoreVOS = null;
         }
-        map.put("info", List.of(s));
+        map.put("list", allStoreVOS);
         return map;
     }
 

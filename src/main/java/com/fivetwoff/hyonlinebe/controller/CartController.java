@@ -1,11 +1,12 @@
 package com.fivetwoff.hyonlinebe.controller;
 
+import com.fivetwoff.hyonlinebe.VO.CartGoodsVO;
 import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
-import com.fivetwoff.hyonlinebe.VO.SubGoodsVO;
+import com.fivetwoff.hyonlinebe.entity.Goods;
+import com.fivetwoff.hyonlinebe.entity.Orders;
 import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndCart;
 import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndOrder;
 import com.fivetwoff.hyonlinebe.entity.cascade.UserAndOrder;
-import com.fivetwoff.hyonlinebe.entity.Orders;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.OrderService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
@@ -41,31 +42,31 @@ public class CartController {
 
     @GetMapping("/get")
     public Map<String, Object> getCart(@RequestParam("uId") String uId) { //CartGoodsList
-        ArrayList<SubGoodsVO> goods = new ArrayList<>();
+        Integer uid = Integer.parseInt(uId);
+        List<CartGoodsVO> goods = new ArrayList<>();
         Map<String, Object> map = new HashMap<>();
+        map.put("code", 200);
+        map.put("info", "Normal Server");
         try {
-            int cId = ucService.findByUser(Integer.parseInt(uId)).getCart_key();
+            int cId = ucService.findByUser(uid).getCart_key();
             List<GoodsAndCart> gcList = gcService.findByCart(cId);
-            Integer sId = usService.findByUser(Integer.parseInt(uId)).get(0).getStore_key();
+            Integer sId = usService.findByUser(uid).get(0).getStore_key();
             String storeName = sService.findById(sId).getName();
             for (GoodsAndCart x : gcList) {
-                SubGoodsVO sg = new SubGoodsVO();
-                sg.setStoreName(storeName);
-                sg.setGoods(gService.findById(x.getGoods_key()));
-                goods.add(sg);
+                Goods goods1 = gService.findById(x.getGoods_key());
+                goods.add(new CartGoodsVO(goods1.getId(), storeName, goods1.getImg(), goods1.getName(),
+                        goods1.getDescription(), goods1.getPrice().toString(), goods1.getNumber()));
             }
-            map.put("userId", uId);
-            map.put("list", goods);
-            map.put("info", "Normal Server");
-            return map;
         } catch (Exception ex) {
             System.out.println(ex.toString());
             goods = null;
-            map.put("list", goods);
-            map.put("userId", uId);
+            map.put("code", 500);
             map.put("info", ex.toString());
-            return map;
         }
+        map.put("userId", uid);
+        map.put("list", goods);
+        return map;
+
     }
 
     @PostMapping("/delete")

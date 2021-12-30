@@ -3,10 +3,10 @@ package com.fivetwoff.hyonlinebe.controller;
 import com.fivetwoff.hyonlinebe.DTO.HomePageDTO;
 import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
 import com.fivetwoff.hyonlinebe.VO.SubGoodsVO;
-import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndCart;
-import com.fivetwoff.hyonlinebe.entity.cascade.UserAndCart;
 import com.fivetwoff.hyonlinebe.entity.Cart;
 import com.fivetwoff.hyonlinebe.entity.Goods;
+import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndCart;
+import com.fivetwoff.hyonlinebe.entity.cascade.UserAndCart;
 import com.fivetwoff.hyonlinebe.service.CartService;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
@@ -39,27 +39,31 @@ public class HomepageController {
     private CartService cService;
 
     @GetMapping("")
-    public Map<String, List<SubGoodsVO>> showGoods() {  //goodsList
-        SubGoodsVO sg = new SubGoodsVO();
-        sg.setStoreName("Normal Server");
-        ArrayList<SubGoodsVO> goodsList = new ArrayList<>();
+    public Map<String, Object> showGoods() {  //goodsList
+        List<SubGoodsVO> goodsList = new ArrayList<>();
         List<Goods> goodsList1 = gService.findAll();
-        Map<String, List<SubGoodsVO>> map = new HashMap<>();
+        Map<String, Object> map = new HashMap<>();
+        map.put("code", 200);
+        map.put("info", "Normal Server");
         for (Goods g : goodsList1) {
             try {
                 Integer sId = sgService.findByGoods(g.getId()).get(0).getStore_key();
                 SubGoodsVO goods = new SubGoodsVO();
-                goods.setGoods(g);
                 goods.setStoreName(sService.findById(sId).getName());
+                goods.setId(g.getId());
+                goods.setImg(g.getImg());
+                goods.setContext(g.getDescription());
+                goods.setPrice(g.getPrice().toString());
                 goodsList.add(goods);
             } catch (Exception e) {
                 System.out.println(e.toString());
                 goodsList.add(null);
-                sg.setStoreName(e.toString());
+                map.put("code", 500);
+                map.put("info", e.toString());
+                break;
             }
         }
         map.put("goodsList", goodsList);
-        map.put("info", List.of(sg));
         return map;
     }
 
