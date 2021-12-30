@@ -3,10 +3,8 @@ package com.fivetwoff.hyonlinebe.controller;
 import com.fivetwoff.hyonlinebe.DTO.HomePageDTO;
 import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
 import com.fivetwoff.hyonlinebe.VO.SubGoodsVO;
-import com.fivetwoff.hyonlinebe.entity.Cart;
 import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndCart;
-import com.fivetwoff.hyonlinebe.entity.cascade.UserAndCart;
 import com.fivetwoff.hyonlinebe.service.CartService;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.StoreService;
@@ -73,38 +71,19 @@ public class HomepageController {
             response.setStatus(404);
             return new StatusCodeVO(404, "传入数据有null");
         }
-        Integer cId = ucService.findByUser(homePageDTO.getUid()).getCart_key();
         try {
-            if (cId == null) {
-                Cart c = new Cart();
-                c.setId(cService.findAll().get(cService.findAll().size() + 1).getId() + 1);
-                c.setTotal_price(0.0);
-                if (cService.insert(c)) {
-                    UserAndCart uc = new UserAndCart();
-                    uc.setUser_key(homePageDTO.getUid());
-                    uc.setCart_key(c.getId());
-                    if (!ucService.insert(uc)) {
-                        throw new Exception("user_cart表插入失败");
-                    }
-                } else {
-                    throw new Exception("cart表插入失败");
-                }
+            Integer cId = ucService.findByUser(homePageDTO.getUid()).getCart_key();
+            Integer gId = homePageDTO.getGid();
+            GoodsAndCart gc = new GoodsAndCart();
+            gc.setCart_key(cId);
+            gc.setGoods_key(gId);
+            if (!gcService.insert(gc)) {
+                throw new Exception("goods_cart表插入失败");
             }
+            return new StatusCodeVO(200, "Normal Server");
         } catch (Exception e) {
             System.out.println(e.toString());
-            response.setStatus(500);
             return new StatusCodeVO(500, e.toString());
-        }
-
-        GoodsAndCart gc = new GoodsAndCart();
-        gc.setGoods_key(homePageDTO.getGid());
-        gc.setCart_key(cId);
-        if (gcService.insert(gc)) {
-            response.setStatus(200);
-            return new StatusCodeVO(200, "Normal Server");
-        } else {
-            response.setStatus(500);
-            return new StatusCodeVO(500, "goods_cart表插入失败");
         }
     }
 }

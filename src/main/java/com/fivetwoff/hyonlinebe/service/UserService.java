@@ -52,6 +52,7 @@ public class UserService {
             log.error(ex.toString());
             return false;
         }
+        log.info("user插入成功");
         return true;
     }
 
@@ -88,7 +89,7 @@ public class UserService {
             }
             return false;
         }
-        log.info("删除" + i[5] + "条信息");
+        log.info("user删除" + i[5] + "条信息");
         return true;
     }
 
@@ -100,7 +101,7 @@ public class UserService {
             log.error(ex.toString());
             return false;
         }
-        log.info("更新了" + i + "条信息");
+        log.info("user更新了" + i + "条信息");
         return true;
     }
 

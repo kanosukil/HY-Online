@@ -41,7 +41,7 @@ public class GoodsCartService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("goods_cart删除了" + i + "条信息");
         return true;
     }
 
@@ -53,7 +53,19 @@ public class GoodsCartService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("goods_cart删除了" + i + "条信息");
+        return true;
+    }
+
+    public boolean deleteByGoodsAndCart(Integer gid, Integer cid) {
+        int i = 0;
+        try {
+            i = goodsCart.deleteByGoodsAndCart(gid, cid);
+        } catch (Exception ex) {
+            log.error(ex.toString());
+            return false;
+        }
+        log.info("goods_cart删除了" + i + "条信息");
         return true;
     }
 
@@ -71,6 +83,7 @@ public class GoodsCartService {
                 return false;
             }
         }
+        log.info("goods_cart插入成功");
         return true;
     }
 }

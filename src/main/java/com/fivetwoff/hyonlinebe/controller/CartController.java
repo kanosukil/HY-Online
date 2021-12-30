@@ -1,11 +1,13 @@
 package com.fivetwoff.hyonlinebe.controller;
 
+import com.fivetwoff.hyonlinebe.DTO.CartDeleteDTO;
 import com.fivetwoff.hyonlinebe.VO.CartGoodsVO;
 import com.fivetwoff.hyonlinebe.VO.StatusCodeVO;
 import com.fivetwoff.hyonlinebe.entity.Goods;
 import com.fivetwoff.hyonlinebe.entity.Orders;
 import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndCart;
 import com.fivetwoff.hyonlinebe.entity.cascade.GoodsAndOrder;
+import com.fivetwoff.hyonlinebe.entity.cascade.StoreAndGoods;
 import com.fivetwoff.hyonlinebe.entity.cascade.UserAndOrder;
 import com.fivetwoff.hyonlinebe.service.GoodsService;
 import com.fivetwoff.hyonlinebe.service.OrderService;
@@ -30,7 +32,7 @@ public class CartController {
     @Autowired
     private GoodsService gService;
     @Autowired
-    private UserStoreService usService;
+    private StoreGoodsService sgService;
     @Autowired
     private StoreService sService;
     @Autowired
@@ -50,12 +52,12 @@ public class CartController {
         try {
             int cId = ucService.findByUser(uid).getCart_key();
             List<GoodsAndCart> gcList = gcService.findByCart(cId);
-            Integer sId = usService.findByUser(uid).get(0).getStore_key();
-            String storeName = sService.findById(sId).getName();
-            for (GoodsAndCart x : gcList) {
-                Goods goods1 = gService.findById(x.getGoods_key());
-                goods.add(new CartGoodsVO(goods1.getId(), storeName, goods1.getImg(), goods1.getName(),
-                        goods1.getDescription(), goods1.getPrice().toString(), goods1.getNumber()));
+            for (GoodsAndCart gc : gcList) {
+                List<StoreAndGoods> sg = sgService.findByGoods(gc.getGoods_key());
+                String storeName = sService.findById(sg.get(0).getStore_key()).getName();
+                Goods g = gService.findById(gc.getGoods_key());
+                goods.add(new CartGoodsVO(g.getId(), storeName, g.getImg(), g.getName(),
+                        g.getDescription(), g.getPrice().toString(), g.getNumber()));
             }
         } catch (Exception ex) {
             System.out.println(ex.toString());
@@ -70,13 +72,22 @@ public class CartController {
     }
 
     @PostMapping("/delete")
-    public StatusCodeVO deleteGood(@RequestParam("gId") String gId, HttpServletResponse response) {
-        if (!gcService.deleteByGoods(Integer.parseInt(gId))) {
-            response.setStatus(404);
-            return new StatusCodeVO(404, "goods_cart表删除异常");
-        } else {
-            response.setStatus(200);
-            return new StatusCodeVO(200, "Normal Server");
+    public StatusCodeVO deleteGood(@RequestBody CartDeleteDTO cart, HttpServletResponse response) {
+        System.out.println(cart);
+        Integer gid = cart.getGid();
+        Integer uid = cart.getUid();
+        try {
+            Integer cid = ucService.findByUser(uid).getCart_key();
+            if (!gcService.deleteByGoodsAndCart(gid, cid)) {
+                throw new Exception("goods_cart表删除异常");
+            } else {
+                response.setStatus(200);
+                return new StatusCodeVO(200, "Normal Server");
+            }
+        } catch (Exception e) {
+            System.out.println(e.toString());
+            response.setStatus(500);
+            return new StatusCodeVO(500, e.toString());
         }
     }
 

@@ -41,7 +41,7 @@ public class StoreGoodsService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("store_goods删除了" + i + "条信息");
         return true;
     }
 
@@ -53,7 +53,7 @@ public class StoreGoodsService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("store_goods删除了" + i + "条信息");
         return true;
     }
 
@@ -65,7 +65,7 @@ public class StoreGoodsService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("store_goods删除了" + i + "条信息");
         return true;
     }
 
@@ -83,6 +83,7 @@ public class StoreGoodsService {
                 return false;
             }
         }
+        log.info("store_goods表插入成功");
         return true;
     }
 }

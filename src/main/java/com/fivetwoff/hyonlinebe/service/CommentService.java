@@ -41,6 +41,7 @@ public class CommentService {
             log.error(ex.toString());
             return false;
         }
+        log.info("comment插入成功");
         return true;
     }
 
@@ -61,7 +62,7 @@ public class CommentService {
             }
             return false;
         }
-        log.info("删除" + i[1] + "条信息");
+        log.info("comment删除" + i[1] + "条信息");
         return true;
     }
 
@@ -73,7 +74,7 @@ public class CommentService {
             log.error(ex.toString());
             return false;
         }
-        log.info("更新了" + i + "条信息");
+        log.info("comment更新了" + i + "条信息");
         return true;
     }
 }

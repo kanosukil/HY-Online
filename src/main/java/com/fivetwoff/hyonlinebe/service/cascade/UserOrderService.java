@@ -41,7 +41,7 @@ public class UserOrderService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("user_order删除了" + i + "条信息");
         return true;
     }
 
@@ -53,7 +53,7 @@ public class UserOrderService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("user_order删除了" + i + "条信息");
         return true;
     }
 
@@ -71,6 +71,7 @@ public class UserOrderService {
                 return false;
             }
         }
+        log.info("user_order插入成功");
         return true;
     }
 }

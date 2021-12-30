@@ -44,6 +44,7 @@ public class StoreService {
             log.error(ex.toString());
             return false;
         }
+        log.info("store表插入成功");
         return true;
     }
 
@@ -68,7 +69,7 @@ public class StoreService {
             }
             return false;
         }
-        log.info("删除" + i[3] + "条信息");
+        log.info("store删除" + i[3] + "条信息");
         return true;
     }
 
@@ -80,7 +81,7 @@ public class StoreService {
             log.error(ex.toString());
             return false;
         }
-        log.info("更新了" + i + "条信息");
+        log.info("store更新了" + i + "条信息");
         return true;
     }
 }

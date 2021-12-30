@@ -27,6 +27,9 @@ public interface GoodsCartMapper {
     @Delete("delete from goods_cart where cart_key=#{id}")
     int deleteByCart(Integer id);
 
+    @Delete("delete from goods_cart where goods_key=#{gid} and cart_key=#{cid}")
+    int deleteByGoodsAndCart(Integer gid, Integer cid);
+
     @Insert("insert into goods_cart(goods_key, cart_key)" +
             "values(#{goods_key}, #{cart_key})")
     int insert(GoodsAndCart goodsAndCart);

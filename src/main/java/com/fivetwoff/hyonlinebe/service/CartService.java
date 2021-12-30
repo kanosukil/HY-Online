@@ -44,6 +44,7 @@ public class CartService {
             log.error(ex.toString());
             return false;
         }
+        log.info("cart插入成功");
         return true;
     }
 
@@ -68,7 +69,7 @@ public class CartService {
             }
             return false;
         }
-        log.info("删除" + i[2] + "条信息");
+        log.info("cart删除" + i[2] + "条信息");
         return true;
     }
 
@@ -80,7 +81,7 @@ public class CartService {
             log.error(ex.toString());
             return false;
         }
-        log.info("更新了" + i + "条信息");
+        log.info("cart更新了" + i + "条信息");
         return true;
     }
 }

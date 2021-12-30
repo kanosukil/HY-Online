@@ -47,6 +47,7 @@ public class GoodsService {
             log.error(ex.toString());
             return false;
         }
+        log.info("goods插入成功");
         return true;
     }
 
@@ -73,7 +74,7 @@ public class GoodsService {
             }
             return false;
         }
-        log.info("删除" + i[2] + "条信息");
+        log.info("goods删除" + i[2] + "条信息");
         return true;
     }
 
@@ -85,7 +86,7 @@ public class GoodsService {
             log.error(ex.toString());
             return false;
         }
-        log.info("更新了" + i + "条信息");
+        log.info("goods更新了" + i + "条信息");
         return true;
     }
 }

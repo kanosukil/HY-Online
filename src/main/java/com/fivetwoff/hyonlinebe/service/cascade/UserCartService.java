@@ -39,7 +39,7 @@ public class UserCartService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("user_cart删除了" + i + "条信息");
         return true;
     }
 
@@ -51,7 +51,7 @@ public class UserCartService {
             log.error(ex.toString());
             return false;
         }
-        log.info("删除了" + i + "条信息");
+        log.info("user_cart删除了" + i + "条信息");
         return true;
     }
 
