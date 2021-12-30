@@ -54,6 +54,11 @@ public class CommentController {
     @PostMapping("")
     public StatusCodeVO addComment(@RequestBody CommentDTO commentDTO,
                                    HttpServletResponse response) {
+        if (commentDTO == null || commentDTO.getUid() == null ||
+                commentDTO.getGid() == null || commentDTO.getComment() == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404, "传入数据有null");
+        }
         Integer gId = commentDTO.getGid();
         String comment = commentDTO.getComment().trim();
         Integer uId = commentDTO.getUid();

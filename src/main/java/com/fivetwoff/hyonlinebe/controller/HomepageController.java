@@ -69,9 +69,9 @@ public class HomepageController {
 
     @PostMapping("")
     public StatusCodeVO addGoods(@RequestBody HomePageDTO homePageDTO, HttpServletResponse response) {
-        if (homePageDTO == null) {
+        if (homePageDTO == null || homePageDTO.getUid() == null || homePageDTO.getGid() == null) {
             response.setStatus(404);
-            return new StatusCodeVO(404, "传入数据为空");
+            return new StatusCodeVO(404, "传入数据有null");
         }
         Integer cId = ucService.findByUser(homePageDTO.getUid()).getCart_key();
         try {

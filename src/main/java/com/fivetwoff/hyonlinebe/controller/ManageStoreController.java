@@ -77,6 +77,10 @@ public class ManageStoreController {
     // 传入数据形式: true/false
     @PostMapping("/change_status")
     public StatusCodeVO change(@RequestBody SystemStatusDTO status, HttpServletResponse response) {
+        if (status == null || status.getStatus() == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404, "传入数据有null");
+        }
         System.out.println(status);
         if (status.getStatus()) {
             systemStatus.setStatus(SystemStatus.ON);
@@ -97,6 +101,10 @@ public class ManageStoreController {
     // 传入数据形式: {"storeIds": [1, 2, 3]} 数组
     @PostMapping("/close_store")
     public StatusCodeVO closeStore(@RequestBody StoreIdListDTO list, HttpServletResponse response) {
+        if (list == null || list.getStoreIds() == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404, "传入数据有null");
+        }
         try {
             for (var storeId : list.getStoreIds()) {
                 List<StoreAndGoods> sgs = storeGoods.findByStore(storeId);
@@ -121,6 +129,10 @@ public class ManageStoreController {
     // 传入数据形式: {"userId": number}
     @PostMapping("/is_open_store")
     public StoreVO isOpen(@RequestBody UserIdDTO userId, HttpServletResponse response) {
+        if (userId == null || userId.getUserId() == null) {
+            response.setStatus(404);
+            return new StoreVO(404, false, "传入数据有null");
+        }
         try {
             if (user.findById(userId.getUserId()) == null) {
                 log.error("用户未知");
@@ -144,6 +156,10 @@ public class ManageStoreController {
     // 传入数据形式: {"storeName": "str", "userKey": number}
     @PostMapping("/create_store")
     public StatusCodeVO create(@RequestBody StoreDTO storeDTO, HttpServletResponse response) {
+        if (storeDTO == null || storeDTO.getUserKey() == null || storeDTO.getStoreName() == null) {
+            response.setStatus(404);
+            return new StatusCodeVO(404, "传入数据有null");
+        }
         try {
             if (user.findById(storeDTO.getUserKey()) == null) {
                 log.error("用户未知");

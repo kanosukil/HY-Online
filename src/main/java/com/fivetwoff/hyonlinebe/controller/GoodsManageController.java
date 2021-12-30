@@ -65,9 +65,10 @@ public class GoodsManageController {
     @PostMapping("/add")
     public StatusCodeVO addGoods(@RequestBody GoodsDTO goods,
                                  HttpServletResponse response) {
-        if (goods == null) {
+        if (goods == null || goods.getUid() == null || goods.getGoodsName() == null
+                || goods.getDescription() == null || goods.getPrice() == null) {
             response.setStatus(404);
-            return new StatusCodeVO(404, "goods为空");
+            return new StatusCodeVO(404, "传入数据有null");
         }
         Integer uid = goods.getUid();
         System.out.println(goods);
@@ -106,9 +107,10 @@ public class GoodsManageController {
 
     @PostMapping("/delete")
     public StatusCodeVO deleteGoods(@RequestBody GoodsDeleteDTO goodsDeleteDTO, HttpServletResponse response) {
-        if (goodsDeleteDTO == null) {
+        if (goodsDeleteDTO == null || goodsDeleteDTO.getGid() == null ||
+                goodsDeleteDTO.getUid() == null) {
             response.setStatus(404);
-            return new StatusCodeVO(404, "传入数据为空");
+            return new StatusCodeVO(404, "传入数据有null");
         }
         Integer uid = goodsDeleteDTO.getUid();
         Integer gid = goodsDeleteDTO.getGid();
@@ -137,9 +139,11 @@ public class GoodsManageController {
 
     @PostMapping("/update")
     public StatusCodeVO updateGoods(@RequestBody GoodsUpdateDTO good, HttpServletResponse response) {
-        if (good == null) {
+        if (good == null || good.getUid() == null || good.getGid() == null || good.getUpdate() == null ||
+                good.getUpdate().getGoodsPrice() == null || good.getUpdate().getGoodsTitle() == null ||
+                good.getUpdate().getGoodsSubtitle() == null) {
             response.setStatus(404);
-            return new StatusCodeVO(404, "goods为空");
+            return new StatusCodeVO(404, "传入数据有null");
         }
         Integer uid = good.getUid();
         Integer gid = good.getGid();
