@@ -24,14 +24,18 @@
         ```
         {
             code”: 状态码,
-            “userId”: number,
+            “userId”: number, // 失败为 -1/-2 成功即为userId
             “isAdmin”: boolean,
+            // 失败
             "data": {
                 "id": number,
                 "username": "string",
                 "password_hash": "string",
                 "head_portrait": "default" // 该项(头像)可忽略,值默认为 default
-            }
+            } 
+            // 成功
+            "data": "token" 
+
 
         }
         ```

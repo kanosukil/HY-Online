@@ -46,15 +46,13 @@ public class UserController {
 
     @PostMapping("/register")
     @ApiOperation("注册")
-    public Result<User> register(@RequestBody RegisterDTO register, HttpServletResponse response) {
-        Result<User> result = null;
-        User u = new User();
+    public Result<Object> register(@RequestBody RegisterDTO register, HttpServletResponse response) {
         try {
             User user = service.findByUsername(register.getUsername());
             // 返回信息
             if (user != null) {
                 response.setStatus(403);
-                result = new Result<>(403, user.getId(), user);
+                return new Result<>(403, -1, user);
             } else {
                 user = new User();
                 user.setId(service.findAll().get(service.findAll().size() - 1).getId() + 1);
@@ -78,7 +76,8 @@ public class UserController {
                     }
                     if (userRole.insert(ur)) {
                         response.setStatus(200);
-                        result = new Result<>(200, user.getId(), user);
+                        String token = JwtUtils.genJsonWebToken(user, List.of(role.findById(1)));
+                        return new Result<>(200, user.getId(), token);
                     } else {
                         throw new Exception("user_role表插入失败");
                     }
@@ -89,15 +88,13 @@ public class UserController {
         } catch (Exception ex) {
             log.error(ex.toString());
             response.setStatus(500);
-            u.setUsername(ex.toString());
-            result = new Result<>(500, -1, u);
+            return new Result<>(500, -2, ex.toString());
         }
-        return result;
     }
 
     @PostMapping("/login")
     @ApiOperation("登陆成功返回token")
-    Result<String> login(@RequestBody LoginDTO login) {
+    public Result<String> login(@RequestBody LoginDTO login) {
         Result<String> result = null;
         String token = null;
         boolean isAdmin = false;
@@ -121,7 +118,7 @@ public class UserController {
         if (token != null) {
             result = new Result<>(200, u.getId(), isAdmin, token);
         } else {
-            result = new Result<>(404, -1, "token未知");
+            result = new Result<>(404, -2, "token未知");
         }
         return result;
     }
