@@ -401,7 +401,7 @@
         - 接收:
         ```
         {
-            "storeNam": “string”,
+            "storeName": “string”,
             "userKey": number
         }
         ```

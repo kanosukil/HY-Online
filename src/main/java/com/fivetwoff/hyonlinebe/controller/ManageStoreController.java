@@ -113,9 +113,16 @@ public class ManageStoreController {
                         throw new Exception("goods表删除失败");
                     }
                 }
+                List<UserAndStore> us = userStore.findByStore(storeId);
+                if (us.size() == 1) {
+                    if (!userRole.deleteByUser(us.get(0).getMaster_key())) {
+                        throw new Exception("user_role删除失败");
+                    }
+                }
                 if (!store.deleteById(storeId)) {
                     throw new Exception("store删除失败");
                 }
+
             }
         } catch (Exception ex) {
             log.error(ex.toString());
